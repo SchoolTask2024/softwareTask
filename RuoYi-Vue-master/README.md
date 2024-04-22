@@ -11,7 +11,7 @@
 
 ## 平台简介
 
-若依是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
+若依是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。!sadas1231123213123123
 
 * 前端采用Vue、Element UI。
 * 后端采用Spring Boot、Spring Security、Redis & Jwt。
@@ -25,7 +25,7 @@
 * 阿里云优惠券：[点我领取](https://www.aliyun.com/minisite/goods?userCode=brki8iof&share_source=copy_link)，腾讯云优惠券：[点我领取](https://cloud.tencent.com/redirect.php?redirect=1025&cps_key=198c8df2ed259157187173bc7f4f32fd&from=console)&nbsp;&nbsp;
 
 ## 内置功能
-
+zjzzjjz????zjzjz?????zjzjz???
 1.  用户管理：用户是系统操作者，该功能主要完成系统用户配置。????
 2.  部门管理：配置系统组织机构（公司、部门、小组），树结构展现支持数据权限。??
 3.  岗位管理：配置系统用户所属担任职务。
