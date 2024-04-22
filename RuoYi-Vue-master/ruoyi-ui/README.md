@@ -6,7 +6,7 @@ git clone https://gitee.com/y_project/RuoYi-Vue
 
 # 进入项目目录
 cd ruoyi-ui
-#12344
+#123445
 # 安装依赖
 npm install
 
