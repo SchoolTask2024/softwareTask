@@ -1,5 +1,7 @@
 package com.ruoyi.system.domain;
 
+import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -33,8 +35,9 @@ public class Code extends BaseEntity
     private Long userId;
 
     /** 导入时间 */
-    @Excel(name = "导入时间")
-    private String time;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "导入时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date time;
 
     /** 代码类型 */
     @Excel(name = "代码类型")
@@ -85,12 +88,12 @@ public class Code extends BaseEntity
     {
         return userId;
     }
-    public void setTime(String time) 
+    public void setTime(Date time) 
     {
         this.time = time;
     }
 
-    public String getTime() 
+    public Date getTime() 
     {
         return time;
     }

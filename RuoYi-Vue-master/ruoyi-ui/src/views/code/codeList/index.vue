@@ -9,6 +9,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="代码类型" prop="type">
+        <el-input
+          v-model="queryParams.type"
+          placeholder="请输入代码类型"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -66,9 +74,17 @@
       <el-table-column label="代码id" align="center" prop="id" />
       <el-table-column label="代码名称" align="center" prop="name" />
       <el-table-column label="导入人员" align="center" prop="userId" />
-      <el-table-column label="导入时间" align="center" prop="time" />
+      <el-table-column label="导入时间" align="center" prop="time" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="代码类型" align="center" prop="type" />
+      <el-table-column label="代码类型" align="center" prop="type">
+        <template slot-scope="scope">
+<!--          <dict-tag :options="dict.type.code_type" :value="scope.row.type"/>-->
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -88,7 +104,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -103,17 +119,25 @@
         <el-form-item label="代码名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入代码名称" />
         </el-form-item>
-        <el-form-item label="代码路径" prop="path">
-          <el-input v-model="form.path" placeholder="请输入代码路径" />
-        </el-form-item>
-        <el-form-item label="导入人员" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入导入人员" />
-        </el-form-item>
-        <el-form-item label="导入时间" prop="time">
-          <el-input v-model="form.time" placeholder="请输入导入时间" />
+        <el-form-item label="代码类型" prop="type">
+          <el-select v-model="form.type" placeholder="请选择代码类型">
+            <el-option
+              v-for="dict in dict.type.code_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
+        </el-form-item>
+        <el-form-item label="代码路径" prop="path">
+         <my-upload
+           v-model="form.path"
+           path="/code/codeList/upload"
+           virtual="/manager/code/"
+         />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -126,9 +150,12 @@
 
 <script>
 import { listCodeList, getCodeList, delCodeList, addCodeList, updateCodeList } from "@/api/code/codeList";
+import MyUpload from "@/components/MyUpload/index.vue";
 
 export default {
   name: "CodeList",
+  components: {MyUpload},
+  dicts:['code_type'],
   data() {
     return {
       // 遮罩层
