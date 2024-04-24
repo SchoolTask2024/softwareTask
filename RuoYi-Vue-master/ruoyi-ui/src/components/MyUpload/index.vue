@@ -80,7 +80,7 @@ export default {
     return {
       number: 0,
       uploadList: [],
-      baseUrl: process.env.VUE_APP_BASE_API+"/"+this.virtual,
+      baseUrl: process.env.VUE_APP_BASE_API+this.virtual +"/",
       uploadFileUrl: process.env.VUE_APP_BASE_API + this.path, // 上传文件服务器地址
       headers: {
         Authorization: "Bearer " + getToken(),

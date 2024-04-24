@@ -9,14 +9,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="代码类型" prop="type">
-        <el-input
-          v-model="queryParams.type"
-          placeholder="请输入代码类型"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="代码类型" prop="type">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.type"-->
+<!--          placeholder="请输入代码类型"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -73,18 +73,19 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="代码id" align="center" prop="id" />
       <el-table-column label="代码名称" align="center" prop="name" />
-      <el-table-column label="导入人员" align="center" prop="userId" />
-      <el-table-column label="导入时间" align="center" prop="time" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="代码类型" align="center" prop="type">
         <template slot-scope="scope">
-<!--          <dict-tag :options="dict.type.code_type" :value="scope.row.type"/>-->
+          <dict-tag :options="dict.type.code_type" :value="scope.row.type"/>
         </template>
       </el-table-column>
+      <el-table-column label="导入人员" align="center" prop="importUser" />
+      <el-table-column label="导入时间" align="center" prop="time" width="180">
+<!--        <template slot-scope="scope">-->
+<!--          <span>{{ parseTime(scope.row.time, '{y}-{m}-{d}') }}</span>-->
+<!--        </template>-->
+      </el-table-column>
+      <el-table-column label="备注" align="center" prop="remark" />
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -136,7 +137,7 @@
          <my-upload
            v-model="form.path"
            path="/code/codeList/upload"
-           virtual="/manager/code/"
+           virtual="/code"
          />
         </el-form-item>
       </el-form>
@@ -187,6 +188,15 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        name: [
+          { required: true, message: "名称不能为空", trigger: "blur" },
+        ],
+        type: [
+          { required: true, message: "代码类型不能为空", trigger: "blur" },
+        ],
+        path: [
+          { required: true, message: "请上传文件", trigger: "blur" },
+        ],
       }
     };
   },
@@ -250,6 +260,7 @@ export default {
       const id = row.id || this.ids
       getCodeList(id).then(response => {
         this.form = response.data;
+        this.form.type = this.form.type.toString();
         this.open = true;
         this.title = "修改代码列表";
       });
