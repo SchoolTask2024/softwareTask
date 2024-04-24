@@ -16,7 +16,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectCodeVo">
-        select id, name, path, status, user_id, time, remark, type from code
+        select id, name, path, time, code.remark, type, su.user_name as importUser
+        from code
+        left join sys_user su on code.user_id = su.user_id
     </sql>
 
     <select id="selectCodeList" parameterType="Code" resultMap="CodeResult">
@@ -37,7 +39,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null">name,</if>
             <if test="path != null">path,</if>
-            <if test="status != null">status,</if>
             <if test="userId != null">user_id,</if>
             <if test="time != null">time,</if>
             <if test="remark != null">remark,</if>
@@ -46,7 +47,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null">#{name},</if>
             <if test="path != null">#{path},</if>
-            <if test="status != null">#{status},</if>
             <if test="userId != null">#{userId},</if>
             <if test="time != null">#{time},</if>
             <if test="remark != null">#{remark},</if>
@@ -59,7 +59,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null">name = #{name},</if>
             <if test="path != null">path = #{path},</if>
-            <if test="status != null">status = #{status},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="time != null">time = #{time},</if>
             <if test="remark != null">remark = #{remark},</if>

@@ -1,5 +1,8 @@
 package com.ruoyi.system.domain;
 
+import java.time.LocalDate;
+import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -31,10 +34,12 @@ public class Code extends BaseEntity
     /** 导入人员 */
     @Excel(name = "导入人员")
     private Long userId;
+    private String importUser;
 
     /** 导入时间 */
-    @Excel(name = "导入时间")
-    private String time;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "导入时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private LocalDate time;
 
     /** 代码类型 */
     @Excel(name = "代码类型")
@@ -72,7 +77,15 @@ public class Code extends BaseEntity
         this.status = status;
     }
 
-    public Long getStatus() 
+    public String getImportUser() {
+        return importUser;
+    }
+
+    public void setImportUser(String importUser) {
+        this.importUser = importUser;
+    }
+
+    public Long getStatus()
     {
         return status;
     }
@@ -85,16 +98,17 @@ public class Code extends BaseEntity
     {
         return userId;
     }
-    public void setTime(String time) 
-    {
+
+
+    public LocalDate getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDate time) {
         this.time = time;
     }
 
-    public String getTime() 
-    {
-        return time;
-    }
-    public void setType(Long type) 
+    public void setType(Long type)
     {
         this.type = type;
     }

@@ -50,17 +50,17 @@ export default {
     // 数量限制
     limit: {
       type: Number,
-      default: 5,
+      default: 1,
     },
     // 大小限制(MB)
     fileSize: {
       type: Number,
-      default: 5,
+      default: 500,
     },
     // 文件类型, 例如['png', 'jpg', 'jpeg']
     fileType: {
       type: Array,
-      default: () => ["doc", "xls", "ppt", "txt", "pdf"],
+      default: () => ["java", "jar", "py"],
     },
     // 是否显示提示
     isShowTip: {
@@ -80,7 +80,7 @@ export default {
     return {
       number: 0,
       uploadList: [],
-      baseUrl: process.env.VUE_APP_BASE_API+"/"+this.virtual,
+      baseUrl: process.env.VUE_APP_BASE_API+this.virtual +"/",
       uploadFileUrl: process.env.VUE_APP_BASE_API + this.path, // 上传文件服务器地址
       headers: {
         Authorization: "Bearer " + getToken(),
