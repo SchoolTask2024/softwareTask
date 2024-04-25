@@ -103,16 +103,15 @@
         <el-form-item label="测试名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入测试名称" />
         </el-form-item>
-        <el-form-item label="所属代码" prop="codeId">
-            <el-select v-model="form.codeId" placeholder="请选择代码">
+        <el-form-item label="所属代码" prop="codeName">
+            <el-select v-model="form.codeName" placeholder="请选择代码">
               <el-option
                 v-for="item in codeOptions"
-                :key="item.id"
+                :key="item.name"
                 :label="item.name"
-                :value="item.id"
+                :value="item.name"
               />
             </el-select>
-
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
@@ -177,7 +176,7 @@ export default {
         name: [
           { required: true, message: "名称不能为空", trigger: "blur" },
         ],
-        codeId: [
+        codeName: [
           { required: true, message: "所属代码不能为空", trigger: "blur" },
         ],
         path: [
@@ -196,15 +195,18 @@ export default {
       this.loading = true;
       listTest1List(this.queryParams).then(response => {
         this.test1ListList = response.rows;
-
         this.total = response.total;
         this.loading = false;
       });
     },
     getCode(){
       listCodeList().then(response => {
-       this.codeOptions = response.rows;
+        this.codeOptions = this.getUniqueCodeOptions(response.rows);
       });
+    },
+    getUniqueCodeOptions(options) {
+      const unique = new Set(options.map(item => item.name));
+      return options.filter(item => unique.has(item.name));
     },
     // 取消按钮
     cancel() {
@@ -221,7 +223,7 @@ export default {
         userId: null,
         time: null,
         remark: null,
-        codeId:null
+        codeName:null
       };
       this.resetForm("form");
     },

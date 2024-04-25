@@ -3,7 +3,6 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.CodeMapper">
-    
     <resultMap type="Code" id="CodeResult">
         <result property="id"    column="id"    />
         <result property="name"    column="name"    />
@@ -13,13 +12,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="time"    column="time"    />
         <result property="remark"    column="remark"    />
         <result property="type"    column="type"    />
+        <result property="version" column="version"/>
     </resultMap>
 
     <sql id="selectCodeVo">
-        select id, name, path, time, code.remark, type, su.user_name as importUser
+        select id, name, path, time, code.remark, type, su.user_name,version as importUser
         from code
         left join sys_user su on code.user_id = su.user_id
     </sql>
+    <select id="selectCodeName" resultMap="CodeResult">
+        select DISTINCT name
+        from code
+    </select>
 
     <select id="selectCodeList" parameterType="Code" resultMap="CodeResult">
         <include refid="selectCodeVo"/>
