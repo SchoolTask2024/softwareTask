@@ -9,10 +9,14 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.Test1;
 import com.ruoyi.system.service.ITest1Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -27,7 +31,8 @@ public class Test1Controller extends BaseController
 {
     @Autowired
     private ITest1Service test1Service;
-
+    @Value("${test.path}")
+    private String testPath;
     /**
      * 查询测试列表列表
      */
@@ -52,7 +57,42 @@ public class Test1Controller extends BaseController
         ExcelUtil<Test1> util = new ExcelUtil<Test1>(Test1.class);
         util.exportExcel(response, list, "测试列表数据");
     }
+    /**
+     * 上传代码文件
+     */
+    @PreAuthorize("@ss.hasPermi('code:codeList:add')")
+    @Log(title = "上传代码文件", businessType = BusinessType.INSERT)
+    @PostMapping("/upload")
+    public AjaxResult upload(MultipartFile file)throws Exception
+    {
+        try
+        {
+            // 上传文件路径
+            String filePath = testPath;
+            // 获取当前时间戳作为文件名
+            String timeStamp = String.valueOf(System.currentTimeMillis());
+            // 获取文件的原始名称
+            String originalFilename = file.getOriginalFilename();
+            // 获取文件的扩展名
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            // 新文件名为时间戳加上文件扩展名
+            String newFileName = timeStamp + fileExtension;
+            // 在指定路径下创建新文件
+            File newFile = new File(filePath + File.separator + newFileName);
+            file.transferTo(newFile);
+            // 构造返回结果
+            AjaxResult ajax = AjaxResult.success();
+            ajax.put("fileName", newFileName);
+            ajax.put("newFileName", newFileName);
+            ajax.put("originalFilename", originalFilename);
 
+            return ajax;
+        }
+        catch (Exception e)
+        {
+            return AjaxResult.error(e.getMessage());
+        }
+    }
     /**
      * 获取测试列表详细信息
      */
@@ -71,6 +111,8 @@ public class Test1Controller extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody Test1 test1)
     {
+        test1.setUserId(getUserId());
+        test1.setTime(LocalDate.now());
         return toAjax(test1Service.insertTest1(test1));
     }
 
