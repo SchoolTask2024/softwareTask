@@ -1,11 +1,13 @@
 package com.ruoyi.system.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 测试列表对象 test1
@@ -37,8 +39,8 @@ public class Test1 extends BaseEntity
     private String codeName;
 
     /** $column.columnComment */
-
-    private LocalDate time;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime time;
 
     public Long getCodeId() {
         return codeId;
@@ -118,11 +120,11 @@ public class Test1 extends BaseEntity
         return userId;
     }
 
-    public LocalDate getTime() {
+    public LocalDateTime getTime() {
         return time;
     }
 
-    public void setTime(LocalDate time) {
+    public void setTime(LocalDateTime time) {
         this.time = time;
     }
 
