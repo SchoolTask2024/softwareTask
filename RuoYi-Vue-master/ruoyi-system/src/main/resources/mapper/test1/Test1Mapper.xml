@@ -27,8 +27,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectTest1List" parameterType="Test1" resultMap="Test1Result">
         <include refid="selectTest1Vo"/>
         <where>  
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="name != null  and name != ''"> and test1.name like concat('%', #{name}, '%')</if>
         </where>
     </select>
     
