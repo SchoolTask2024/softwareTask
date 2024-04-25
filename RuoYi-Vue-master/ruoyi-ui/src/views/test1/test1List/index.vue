@@ -107,9 +107,9 @@
             <el-select v-model="form.codeName" placeholder="请选择代码">
               <el-option
                 v-for="item in codeOptions"
-                :key="item.name"
-                :label="item.name"
-                :value="item.name"
+                :key="item"
+                :label="item"
+                :value="item"
               />
             </el-select>
         </el-form-item>
@@ -201,7 +201,7 @@ export default {
     },
     getCode(){
       getCodeName().then(response=>{
-        console.log(response)
+        this.codeOptions = response.data
       });
       // listCodeList().then(response => {
       //   this.codeOptions = this.getUniqueCodeOptions(response.rows);
