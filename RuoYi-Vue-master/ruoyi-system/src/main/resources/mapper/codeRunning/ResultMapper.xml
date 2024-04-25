@@ -7,23 +7,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="Result" id="ResultResult">
         <result property="id"    column="id"    />
         <result property="codeId"    column="code_id"    />
-        <result property="batchId"    column="batch_id"    />
         <result property="path"    column="path"    />
         <result property="userId"    column="user_id"    />
         <result property="time"    column="time"    />
         <result property="coverageRate"    column="coverage_rate"    />
+        <result property="resultName"    column="result_name"    />
     </resultMap>
 
     <sql id="selectResultVo">
-        select id, code_id, batch_id, path, user_id, time, coverage_rate from result
+        select id, code_id, path, user_id, time, coverage_rate, result_name from result
     </sql>
 
     <select id="selectResultList" parameterType="Result" resultMap="ResultResult">
         <include refid="selectResultVo"/>
         <where>  
             <if test="codeId != null "> and code_id = #{codeId}</if>
-            <if test="batchId != null "> and batch_id = #{batchId}</if>
-            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="params.beginCoverageRate != null and params.beginCoverageRate != '' and params.endCoverageRate != null and params.endCoverageRate != ''"> and coverage_rate between #{params.beginCoverageRate} and #{params.endCoverageRate}</if>
+            <if test="resultName != null  and resultName != ''"> and result_name like concat('%', #{resultName}, '%')</if>
         </where>
     </select>
     
@@ -37,20 +37,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
             <if test="codeId != null">code_id,</if>
-            <if test="batchId != null">batch_id,</if>
             <if test="path != null">path,</if>
             <if test="userId != null">user_id,</if>
             <if test="time != null">time,</if>
             <if test="coverageRate != null">coverage_rate,</if>
+            <if test="resultName != null">result_name,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
             <if test="codeId != null">#{codeId},</if>
-            <if test="batchId != null">#{batchId},</if>
             <if test="path != null">#{path},</if>
             <if test="userId != null">#{userId},</if>
             <if test="time != null">#{time},</if>
             <if test="coverageRate != null">#{coverageRate},</if>
+            <if test="resultName != null">#{resultName},</if>
          </trim>
     </insert>
 
@@ -58,11 +58,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update result
         <trim prefix="SET" suffixOverrides=",">
             <if test="codeId != null">code_id = #{codeId},</if>
-            <if test="batchId != null">batch_id = #{batchId},</if>
             <if test="path != null">path = #{path},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="time != null">time = #{time},</if>
             <if test="coverageRate != null">coverage_rate = #{coverageRate},</if>
+            <if test="resultName != null">result_name = #{resultName},</if>
         </trim>
         where id = #{id}
     </update>

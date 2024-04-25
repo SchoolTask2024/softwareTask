@@ -15,31 +15,32 @@ public class Result extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 执行结果id */
+    /**  */
     private Long id;
 
-    /** 代码id */
-    @Excel(name = "代码id")
+    /**  */
+    @Excel(name = "")
     private Long codeId;
 
-    /** 测试批次id */
-    @Excel(name = "测试批次id")
-    private Long batchId;
-
-    /** 存储路径 */
+    /**  */
+    @Excel(name = "")
     private String path;
 
-    /** 执行人员id */
-    @Excel(name = "执行人员id")
+    /**  */
+    @Excel(name = "")
     private Long userId;
 
-    /** 执行时间 */
-    @Excel(name = "执行时间")
+    /**  */
+    @Excel(name = "")
     private String time;
 
-    /** 覆盖率 */
-    @Excel(name = "覆盖率")
+    /**  */
+    @Excel(name = "")
     private String coverageRate;
+
+    /** $column.columnComment */
+    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    private String resultName;
 
     public void setId(Long id) 
     {
@@ -58,15 +59,6 @@ public class Result extends BaseEntity
     public Long getCodeId() 
     {
         return codeId;
-    }
-    public void setBatchId(Long batchId) 
-    {
-        this.batchId = batchId;
-    }
-
-    public Long getBatchId() 
-    {
-        return batchId;
     }
     public void setPath(String path) 
     {
@@ -104,17 +96,26 @@ public class Result extends BaseEntity
     {
         return coverageRate;
     }
+    public void setResultName(String resultName) 
+    {
+        this.resultName = resultName;
+    }
+
+    public String getResultName() 
+    {
+        return resultName;
+    }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
             .append("codeId", getCodeId())
-            .append("batchId", getBatchId())
             .append("path", getPath())
             .append("userId", getUserId())
             .append("time", getTime())
             .append("coverageRate", getCoverageRate())
+            .append("resultName", getResultName())
             .toString();
     }
 }

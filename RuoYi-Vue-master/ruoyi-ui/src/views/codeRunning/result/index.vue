@@ -1,26 +1,26 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="代码id" prop="codeId">
+      <el-form-item label="" prop="codeId">
         <el-input
           v-model="queryParams.codeId"
-          placeholder="请输入代码id"
+          placeholder="请输入"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="测试批次id" prop="batchId">
+      <el-form-item label="" prop="coverageRate">
         <el-input
-          v-model="queryParams.batchId"
-          placeholder="请输入测试批次id"
+          v-model="queryParams.coverageRate"
+          placeholder="请输入"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="执行人员id" prop="userId">
+      <el-form-item label="${comment}" prop="resultName">
         <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入执行人员id"
+          v-model="queryParams.resultName"
+          placeholder="请输入${comment}"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -79,12 +79,13 @@
 
     <el-table v-loading="loading" :data="resultList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="执行结果id" align="center" prop="id" />
-      <el-table-column label="代码id" align="center" prop="codeId" />
-      <el-table-column label="测试批次id" align="center" prop="batchId" />
-      <el-table-column label="执行人员id" align="center" prop="userId" />
-      <el-table-column label="执行时间" align="center" prop="time" />
-      <el-table-column label="覆盖率" align="center" prop="coverageRate" />
+      <el-table-column label="" align="center" prop="id" />
+      <el-table-column label="" align="center" prop="codeId" />
+      <el-table-column label="" align="center" prop="path" />
+      <el-table-column label="" align="center" prop="userId" />
+      <el-table-column label="" align="center" prop="time" />
+      <el-table-column label="" align="center" prop="coverageRate" />
+      <el-table-column label="${comment}" align="center" prop="resultName" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -116,11 +117,11 @@
     <!-- 添加或修改代码运行对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="代码id" prop="codeId">
-          <el-input v-model="form.codeId" placeholder="请输入代码id" />
+        <el-form-item label="" prop="codeId">
+          <el-input v-model="form.codeId" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="测试批次id" prop="batchId">
-          <el-input v-model="form.batchId" placeholder="请输入测试批次id" />
+        <el-form-item label="${comment}" prop="resultName">
+          <el-input v-model="form.resultName" placeholder="请输入${comment}" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -161,8 +162,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
         codeId: null,
-        batchId: null,
-        userId: null,
+        coverageRate: null,
+        resultName: null
       },
       // 表单参数
       form: {},
@@ -194,11 +195,11 @@ export default {
       this.form = {
         id: null,
         codeId: null,
-        batchId: null,
         path: null,
         userId: null,
         time: null,
-        coverageRate: null
+        coverageRate: null,
+        resultName: null
       };
       this.resetForm("form");
     },
