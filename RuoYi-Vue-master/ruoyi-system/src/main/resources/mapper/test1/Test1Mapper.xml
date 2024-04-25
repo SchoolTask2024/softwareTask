@@ -45,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null">status,</if>
             <if test="userId != null">user_id,</if>
             <if test="time != null">time,</if>
-            <if test="codeId!=null">code_id</if>
+            <if test="codeId!=null">code_id,</if>
             <if test="remark != null">remark,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
