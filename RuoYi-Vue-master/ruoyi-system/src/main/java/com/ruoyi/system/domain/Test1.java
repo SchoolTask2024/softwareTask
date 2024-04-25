@@ -1,49 +1,40 @@
 package com.ruoyi.system.domain;
 
-import java.time.LocalDate;
-import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
- * 代码列表对象 code
+ * 测试列表对象 test1
  * 
- * @author Arthur
+ * @author niujiazhen
  * @date 2024-04-24
  */
-public class Code extends BaseEntity
+public class Test1 extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /** 代码id */
+    /** $column.columnComment */
     private Long id;
 
-    /** 代码名称 */
-    @Excel(name = "代码名称")
+    /** $column.columnComment */
+    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
     private String name;
 
-    /** 代码路径 */
+    /** $column.columnComment */
     private String path;
 
-    /** 代码状态 */
+    /** $column.columnComment */
     private Long status;
 
-    /** 导入人员 */
-    @Excel(name = "导入人员")
+    /** $column.columnComment */
+    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
     private Long userId;
-    private String importUser;
 
-    /** 导入时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "导入时间", width = 30, dateFormat = "yyyy-MM-dd")
-    private LocalDate time;
-
-    /** 代码类型 */
-    @Excel(name = "代码类型")
-    private Long type;
+    /** $column.columnComment */
+    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    private String time;
 
     public void setId(Long id) 
     {
@@ -77,15 +68,7 @@ public class Code extends BaseEntity
         this.status = status;
     }
 
-    public String getImportUser() {
-        return importUser;
-    }
-
-    public void setImportUser(String importUser) {
-        this.importUser = importUser;
-    }
-
-    public Long getStatus()
+    public Long getStatus() 
     {
         return status;
     }
@@ -98,24 +81,14 @@ public class Code extends BaseEntity
     {
         return userId;
     }
-
-
-    public LocalDate getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDate time) {
+    public void setTime(String time) 
+    {
         this.time = time;
     }
 
-    public void setType(Long type)
+    public String getTime() 
     {
-        this.type = type;
-    }
-
-    public Long getType() 
-    {
-        return type;
+        return time;
     }
 
     @Override
@@ -128,7 +101,6 @@ public class Code extends BaseEntity
             .append("userId", getUserId())
             .append("time", getTime())
             .append("remark", getRemark())
-            .append("type", getType())
             .toString();
     }
 }

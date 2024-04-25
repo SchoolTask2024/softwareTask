@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ruoyi.system.mapper.CodeMapper">
+<mapper namespace="com.ruoyi.system.mapper.Test1Mapper">
     
-    <resultMap type="Code" id="CodeResult">
+    <resultMap type="Test1" id="Test1Result">
         <result property="id"    column="id"    />
         <result property="name"    column="name"    />
         <result property="path"    column="path"    />
@@ -12,67 +12,64 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="userId"    column="user_id"    />
         <result property="time"    column="time"    />
         <result property="remark"    column="remark"    />
-        <result property="type"    column="type"    />
     </resultMap>
 
-    <sql id="selectCodeVo">
-        select id, name, path, time, code.remark, type, su.user_name as importUser
-        from code
-        left join sys_user su on code.user_id = su.user_id
+    <sql id="selectTest1Vo">
+        select id, name, path, status, user_id, time, remark from test1
     </sql>
 
-    <select id="selectCodeList" parameterType="Code" resultMap="CodeResult">
-        <include refid="selectCodeVo"/>
+    <select id="selectTest1List" parameterType="Test1" resultMap="Test1Result">
+        <include refid="selectTest1Vo"/>
         <where>  
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="type != null "> and type = #{type}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
         </where>
     </select>
     
-    <select id="selectCodeById" parameterType="Long" resultMap="CodeResult">
-        <include refid="selectCodeVo"/>
+    <select id="selectTest1ById" parameterType="Long" resultMap="Test1Result">
+        <include refid="selectTest1Vo"/>
         where id = #{id}
     </select>
         
-    <insert id="insertCode" parameterType="Code" useGeneratedKeys="true" keyProperty="id">
-        insert into code
+    <insert id="insertTest1" parameterType="Test1" useGeneratedKeys="true" keyProperty="id">
+        insert into test1
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null">name,</if>
             <if test="path != null">path,</if>
+            <if test="status != null">status,</if>
             <if test="userId != null">user_id,</if>
             <if test="time != null">time,</if>
             <if test="remark != null">remark,</if>
-            <if test="type != null">type,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null">#{name},</if>
             <if test="path != null">#{path},</if>
+            <if test="status != null">#{status},</if>
             <if test="userId != null">#{userId},</if>
             <if test="time != null">#{time},</if>
             <if test="remark != null">#{remark},</if>
-            <if test="type != null">#{type},</if>
          </trim>
     </insert>
 
-    <update id="updateCode" parameterType="Code">
-        update code
+    <update id="updateTest1" parameterType="Test1">
+        update test1
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null">name = #{name},</if>
             <if test="path != null">path = #{path},</if>
+            <if test="status != null">status = #{status},</if>
             <if test="userId != null">user_id = #{userId},</if>
             <if test="time != null">time = #{time},</if>
             <if test="remark != null">remark = #{remark},</if>
-            <if test="type != null">type = #{type},</if>
         </trim>
         where id = #{id}
     </update>
 
-    <delete id="deleteCodeById" parameterType="Long">
-        delete from code where id = #{id}
+    <delete id="deleteTest1ById" parameterType="Long">
+        delete from test1 where id = #{id}
     </delete>
 
-    <delete id="deleteCodeByIds" parameterType="String">
-        delete from code where id in 
+    <delete id="deleteTest1ByIds" parameterType="String">
+        delete from test1 where id in 
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
