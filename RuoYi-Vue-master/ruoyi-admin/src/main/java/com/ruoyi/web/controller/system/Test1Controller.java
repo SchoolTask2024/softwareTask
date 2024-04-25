@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -112,7 +113,7 @@ public class Test1Controller extends BaseController
     public AjaxResult add(@RequestBody Test1 test1)
     {
         test1.setUserId(getUserId());
-        test1.setTime(LocalDate.now());
+        test1.setTime(LocalDateTime.now());
         return toAjax(test1Service.insertTest1(test1));
     }
 

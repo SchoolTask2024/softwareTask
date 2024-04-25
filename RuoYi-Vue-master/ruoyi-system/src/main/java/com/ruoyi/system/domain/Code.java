@@ -1,6 +1,7 @@
 package com.ruoyi.system.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -37,9 +38,8 @@ public class Code extends BaseEntity
     private String importUser;
 
     /** 导入时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "导入时间", width = 30, dateFormat = "yyyy-MM-dd")
-    private LocalDate time;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime time;
 
     /** 代码类型 */
     @Excel(name = "代码类型")
@@ -100,11 +100,11 @@ public class Code extends BaseEntity
     }
 
 
-    public LocalDate getTime() {
+    public LocalDateTime getTime() {
         return time;
     }
 
-    public void setTime(LocalDate time) {
+    public void setTime(LocalDateTime time) {
         this.time = time;
     }
 
