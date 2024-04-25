@@ -130,3 +130,6 @@ xss:
 code:
   path: D:/manager/code
   virtual: /code
+test:
+    path: D:/manager/test
+    virtual: /test

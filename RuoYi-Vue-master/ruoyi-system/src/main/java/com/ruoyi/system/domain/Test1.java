@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
+import java.time.LocalDate;
+
 /**
  * 测试列表对象 test1
  * 
@@ -19,7 +21,7 @@ public class Test1 extends BaseEntity
     private Long id;
 
     /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+
     private String name;
 
     /** $column.columnComment */
@@ -27,16 +29,50 @@ public class Test1 extends BaseEntity
 
     /** $column.columnComment */
     private Long status;
+    private Long codeId;
+    private Code code;
+    private String importUser;
 
-    /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
     private Long userId;
+    private String codeName;
 
     /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
-    private String time;
 
-    public void setId(Long id) 
+    private LocalDate time;
+
+    public Long getCodeId() {
+        return codeId;
+    }
+
+    public void setCodeId(Long codeId) {
+        this.codeId = codeId;
+    }
+
+    public Code getCode() {
+        return code;
+    }
+
+    public void setCode(Code code) {
+        this.code = code;
+    }
+
+    public String getImportUser() {
+        return importUser;
+    }
+
+    public void setImportUser(String importUser) {
+        this.importUser = importUser;
+    }
+
+    public String getCodeName() {
+        return codeName;
+    }
+
+    public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -81,14 +117,13 @@ public class Test1 extends BaseEntity
     {
         return userId;
     }
-    public void setTime(String time) 
-    {
-        this.time = time;
+
+    public LocalDate getTime() {
+        return time;
     }
 
-    public String getTime() 
-    {
-        return time;
+    public void setTime(LocalDate time) {
+        this.time = time;
     }
 
     @Override

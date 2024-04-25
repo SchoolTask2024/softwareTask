@@ -9,14 +9,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="测试人员" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入测试人员"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -73,8 +65,9 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="测试id" align="center" prop="id" />
       <el-table-column label="测试名称" align="center" prop="name" />
-      <el-table-column label="测试人员" align="center" prop="userId" />
-      <el-table-column label="测试时间" align="center" prop="time" />
+      <el-table-column label="所属代码" align="center" prop="codeName" />
+      <el-table-column label="导入人员" align="center" prop="importUser" />
+      <el-table-column label="导入时间" align="center" prop="time" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -95,7 +88,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -110,17 +103,27 @@
         <el-form-item label="测试名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入测试名称" />
         </el-form-item>
-        <el-form-item label="测试路径" prop="path">
-          <el-input v-model="form.path" placeholder="请输入测试路径" />
-        </el-form-item>
-        <el-form-item label="测试人员" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入测试人员" />
-        </el-form-item>
-        <el-form-item label="测试时间" prop="time">
-          <el-input v-model="form.time" placeholder="请输入测试时间" />
+        <el-form-item label="所属代码" prop="codeId">
+            <el-select v-model="form.codeId" placeholder="请选择代码">
+              <el-option
+                v-for="item in codeOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
+        </el-form-item>
+        <el-form-item label="测试路径" prop="path">
+          <my-upload
+            v-model="form.path"
+            path="/test1/test1List/upload"
+            virtual="/test"
+            :file-type="['txt']"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -133,9 +136,12 @@
 
 <script>
 import { listTest1List, getTest1List, delTest1List, addTest1List, updateTest1List } from "@/api/test1/test1List";
+import MyUpload from "@/components/MyUpload/index.vue";
+import {listCodeList} from "@/api/code/codeList";
 
 export default {
   name: "Test1List",
+  components: {MyUpload},
   data() {
     return {
       // 遮罩层
@@ -156,6 +162,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      codeOptions:[],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -167,10 +174,20 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        name: [
+          { required: true, message: "名称不能为空", trigger: "blur" },
+        ],
+        codeId: [
+          { required: true, message: "所属代码不能为空", trigger: "blur" },
+        ],
+        path: [
+          { required: true, message: "请上传文件", trigger: "blur" },
+        ],
       }
     };
   },
   created() {
+    this.getCode();
     this.getList();
   },
   methods: {
@@ -179,8 +196,14 @@ export default {
       this.loading = true;
       listTest1List(this.queryParams).then(response => {
         this.test1ListList = response.rows;
+
         this.total = response.total;
         this.loading = false;
+      });
+    },
+    getCode(){
+      listCodeList().then(response => {
+       this.codeOptions = response.rows;
       });
     },
     // 取消按钮
@@ -197,7 +220,8 @@ export default {
         status: null,
         userId: null,
         time: null,
-        remark: null
+        remark: null,
+        codeId:null
       };
       this.resetForm("form");
     },
