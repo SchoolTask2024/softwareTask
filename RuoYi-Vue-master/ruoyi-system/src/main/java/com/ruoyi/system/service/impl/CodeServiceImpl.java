@@ -42,6 +42,11 @@ public class CodeServiceImpl implements ICodeService
     {
         return codeMapper.selectCodeList(code);
     }
+    @Override
+    public List<String> selectCodeName()
+    {
+        return codeMapper.selectCodeName();
+    }
 
     /**
      * 新增代码列表

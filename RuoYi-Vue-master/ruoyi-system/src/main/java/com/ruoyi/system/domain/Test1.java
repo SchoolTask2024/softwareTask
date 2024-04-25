@@ -31,10 +31,7 @@ public class Test1 extends BaseEntity
 
     /** $column.columnComment */
     private Long status;
-    private Long codeId;
-    private Code code;
     private String importUser;
-
     private Long userId;
     private String codeName;
 
@@ -42,21 +39,6 @@ public class Test1 extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
 
-    public Long getCodeId() {
-        return codeId;
-    }
-
-    public void setCodeId(Long codeId) {
-        this.codeId = codeId;
-    }
-
-    public Code getCode() {
-        return code;
-    }
-
-    public void setCode(Code code) {
-        this.code = code;
-    }
 
     public String getImportUser() {
         return importUser;

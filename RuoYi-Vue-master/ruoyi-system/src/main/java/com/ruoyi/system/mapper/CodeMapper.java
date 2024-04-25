@@ -26,7 +26,7 @@ public interface CodeMapper
      * @return 代码列表集合
      */
     public List<Code> selectCodeList(Code code);
-
+    public List<String> selectCodeName();
     /**
      * 新增代码列表
      * 
@@ -58,4 +58,6 @@ public interface CodeMapper
      * @return 结果
      */
     public int deleteCodeByIds(Long[] ids);
+
+
 }

@@ -13,15 +13,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="time"    column="time"    />
         <result property="codeId" column="code_id"/>
         <result property="remark"    column="remark"    />
+        <result property="codeName"    column="code_name"    />
     </resultMap>
 
     <sql id="selectTest1Vo">
         select test1.id, test1.name, test1.path, test1.user_id,
-               test1.time, test1.remark ,test1.code_id,su.user_name as importUser,
-                c.name as codeName
+               test1.time, test1.remark ,su.user_name as importUser,test1.code_name
         from test1
         left join sys_user su on test1.user_id = su.user_id
-        left join code c on c.id = test1.code_id
     </sql>
 
     <select id="selectTest1List" parameterType="Test1" resultMap="Test1Result">
@@ -44,7 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null">status,</if>
             <if test="userId != null">user_id,</if>
             <if test="time != null">time,</if>
-            <if test="codeId!=null">code_id,</if>
+            <if test="codeName!=null">code_name,</if>
             <if test="remark != null">remark,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -53,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null">#{status},</if>
             <if test="userId != null">#{userId},</if>
             <if test="time != null">#{time},</if>
-            <if test="codeId!=null">#{codeId},</if>
+            <if test="codeName!=null">#{codeName},</if>
             <if test="remark != null">#{remark},</if>
          </trim>
     </insert>

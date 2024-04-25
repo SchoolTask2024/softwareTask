@@ -45,7 +45,17 @@ public class Code extends BaseEntity
     @Excel(name = "代码类型")
     private Long type;
 
-    public void setId(Long id) 
+    private String version;
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

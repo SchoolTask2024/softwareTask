@@ -8,7 +8,12 @@ export function listCodeList(query) {
     params: query
   })
 }
-
+export function getCodeName() {
+  return request({
+    url: '/code/codeList/listName',
+    method: 'get'
+  })
+}
 // 查询代码列表详细
 export function getCodeList(id) {
   return request({

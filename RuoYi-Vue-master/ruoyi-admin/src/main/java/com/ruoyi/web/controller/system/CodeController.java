@@ -56,6 +56,13 @@ public class CodeController extends BaseController
         List<Code> list = codeService.selectCodeList(code);
         return getDataTable(list);
     }
+    @PreAuthorize("@ss.hasPermi('code:codeList:list')")
+    @GetMapping("/listName")
+    public AjaxResult list()
+    {
+        List<String> list = codeService.selectCodeName();
+        return new AjaxResult(200,"获取成功",list);
+    }
 
     /**
      * 导出代码列表列表
