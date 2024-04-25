@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         from code
         left join sys_user su on code.user_id = su.user_id
     </sql>
-    <select id="selectCodeName" resultMap="CodeResult">
+    <select id="selectCodeName">
         select DISTINCT name
         from code
     </select>

@@ -136,7 +136,7 @@
 <script>
 import { listTest1List, getTest1List, delTest1List, addTest1List, updateTest1List } from "@/api/test1/test1List";
 import MyUpload from "@/components/MyUpload/index.vue";
-import {listCodeList} from "@/api/code/codeList";
+import {getCodeName, listCodeList} from "@/api/code/codeList";
 
 export default {
   name: "Test1List",
@@ -200,9 +200,12 @@ export default {
       });
     },
     getCode(){
-      listCodeList().then(response => {
-        this.codeOptions = this.getUniqueCodeOptions(response.rows);
+      getCodeName().then(response=>{
+        console.log(response)
       });
+      // listCodeList().then(response => {
+      //   this.codeOptions = this.getUniqueCodeOptions(response.rows);
+      // });
     },
     getUniqueCodeOptions(options) {
       const unique = new Set(options.map(item => item.name));

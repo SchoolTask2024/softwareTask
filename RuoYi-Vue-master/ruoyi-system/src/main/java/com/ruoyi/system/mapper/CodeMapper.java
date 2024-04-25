@@ -26,7 +26,7 @@ public interface CodeMapper
      * @return 代码列表集合
      */
     public List<Code> selectCodeList(Code code);
-    public List<Code> selectCodeName();
+    public List<String> selectCodeName();
     /**
      * 新增代码列表
      * 

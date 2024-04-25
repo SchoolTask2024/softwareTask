@@ -43,7 +43,7 @@ public class CodeServiceImpl implements ICodeService
         return codeMapper.selectCodeList(code);
     }
     @Override
-    public List<Code> selectCodeName()
+    public List<String> selectCodeName()
     {
         return codeMapper.selectCodeName();
     }

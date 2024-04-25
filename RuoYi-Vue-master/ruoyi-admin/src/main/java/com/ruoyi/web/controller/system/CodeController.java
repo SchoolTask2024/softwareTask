@@ -60,7 +60,7 @@ public class CodeController extends BaseController
     @GetMapping("/listName")
     public AjaxResult list()
     {
-        List<Code> list = codeService.selectCodeName();
+        List<String> list = codeService.selectCodeName();
         return new AjaxResult(200,"获取成功",list);
     }
 

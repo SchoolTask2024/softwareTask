@@ -27,7 +27,7 @@ public interface ICodeService
      */
     public List<Code> selectCodeList(Code code);
 
-    List<Code> selectCodeName();
+    public List<String> selectCodeName();
 
     /**
      * 新增代码列表
