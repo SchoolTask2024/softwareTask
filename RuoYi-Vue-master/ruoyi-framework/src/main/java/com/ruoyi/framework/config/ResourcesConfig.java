@@ -30,6 +30,10 @@ public class ResourcesConfig implements WebMvcConfigurer
     private String codePath;
     @Value("${code.virtual}")
     private String codeVirtualPath;
+    @Value("${test.path}")
+    private String testPath;
+    @Value("${test.virtual}")
+    private String testVirtualPath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry)
@@ -40,6 +44,8 @@ public class ResourcesConfig implements WebMvcConfigurer
 
         registry.addResourceHandler(codeVirtualPath+"/**")
                 .addResourceLocations("file:"+codePath+"/");
+        registry.addResourceHandler(testVirtualPath+"/**")
+                .addResourceLocations("file:"+testPath+"/");
         /** swagger配置 */
         registry.addResourceHandler("/swagger-ui/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/springfox-swagger-ui/")
