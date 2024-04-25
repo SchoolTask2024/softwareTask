@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 代码列表Controller
- * 
+ *
  * @author Arthur
  * @date 2024-04-24
  */
@@ -97,6 +97,21 @@ public class CodeController extends BaseController
     {
         code.setUserId(getUserId());
         code.setTime(LocalDateTime.now());
+        if(!codeService.selectCodeName().contains(code.getName())){
+            code.setVersion(1);
+        }
+        else{
+            int maxVersion=-999999;
+            List<Code> codeList=codeService.selectCodeList(new Code());
+            for (int i = 0; i < codeList.size(); i++) {
+                if(codeList.get(i).getName().equals(code.getName())){
+                    if(codeList.get(i).getVersion()>maxVersion){
+                        maxVersion=codeList.get(i).getVersion();
+                    }
+                }
+            }
+            code.setVersion(maxVersion+1);
+        }
         return toAjax(codeService.insertCode(code));
     }
 
@@ -154,7 +169,7 @@ public class CodeController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('code:codeList:remove')")
     @Log(title = "代码列表", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
+    @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(codeService.deleteCodeByIds(ids));
