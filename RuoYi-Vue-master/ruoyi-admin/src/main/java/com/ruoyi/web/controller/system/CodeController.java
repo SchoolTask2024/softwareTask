@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.system;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.crypto.Data;
@@ -88,7 +89,7 @@ public class CodeController extends BaseController
     public AjaxResult add(@RequestBody Code code)
     {
         code.setUserId(getUserId());
-        code.setTime(LocalDate.now());
+        code.setTime(LocalDateTime.now());
         return toAjax(codeService.insertCode(code));
     }
 
