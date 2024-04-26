@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 代码列表Controller
- * 
+ *
  * @author Arthur
  * @date 2024-04-24
  */
@@ -169,7 +169,7 @@ public class CodeController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('code:codeList:remove')")
     @Log(title = "代码列表", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
+    @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(codeService.deleteCodeByIds(ids));

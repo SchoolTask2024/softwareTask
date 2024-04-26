@@ -11,7 +11,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 代码列表对象 code
- * 
+ *
  * @author Arthur
  * @date 2024-04-24
  */
@@ -60,29 +60,29 @@ public class Code extends BaseEntity
         this.id = id;
     }
 
-    public Long getId() 
+    public Long getId()
     {
         return id;
     }
-    public void setName(String name) 
+    public void setName(String name)
     {
         this.name = name;
     }
 
-    public String getName() 
+    public String getName()
     {
         return name;
     }
-    public void setPath(String path) 
+    public void setPath(String path)
     {
         this.path = path;
     }
 
-    public String getPath() 
+    public String getPath()
     {
         return path;
     }
-    public void setStatus(Long status) 
+    public void setStatus(Long status)
     {
         this.status = status;
     }
@@ -99,12 +99,12 @@ public class Code extends BaseEntity
     {
         return status;
     }
-    public void setUserId(Long userId) 
+    public void setUserId(Long userId)
     {
         this.userId = userId;
     }
 
-    public Long getUserId() 
+    public Long getUserId()
     {
         return userId;
     }
@@ -123,7 +123,7 @@ public class Code extends BaseEntity
         this.type = type;
     }
 
-    public Long getType() 
+    public Long getType()
     {
         return type;
     }
@@ -131,14 +131,14 @@ public class Code extends BaseEntity
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("name", getName())
-            .append("path", getPath())
-            .append("status", getStatus())
-            .append("userId", getUserId())
-            .append("time", getTime())
-            .append("remark", getRemark())
-            .append("type", getType())
-            .toString();
+                .append("id", getId())
+                .append("name", getName())
+                .append("path", getPath())
+                .append("status", getStatus())
+                .append("userId", getUserId())
+                .append("time", getTime())
+                .append("remark", getRemark())
+                .append("type", getType())
+                .toString();
     }
 }
