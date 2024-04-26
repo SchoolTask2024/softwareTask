@@ -73,7 +73,6 @@
       <el-table-column type="selection" width="55" align="center" />
 <!--      <el-table-column label="代码id" align="center" prop="id" />-->
       <el-table-column label="代码名称" align="center" prop="name" />
-      <el-table-column label="代码版本" align="center" prop="version" />
       <el-table-column label="代码类型" align="center" prop="type">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.code_type" :value="scope.row.type"/>

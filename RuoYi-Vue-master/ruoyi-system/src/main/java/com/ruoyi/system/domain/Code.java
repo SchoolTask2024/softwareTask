@@ -139,6 +139,7 @@ public class Code extends BaseEntity
                 .append("time", getTime())
                 .append("remark", getRemark())
                 .append("type", getType())
+                .append("version", getVersion())
                 .toString();
     }
 }
