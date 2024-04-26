@@ -43,6 +43,10 @@ public class Test1ServiceImpl implements ITest1Service
         return test1Mapper.selectTest1List(test1);
     }
 
+
+    @Override
+    public List<Test1> selectTestListByCodeName(String codeName){return test1Mapper.selectTestListByCodeName(codeName);}
+
     /**
      * 新增测试列表
      * 

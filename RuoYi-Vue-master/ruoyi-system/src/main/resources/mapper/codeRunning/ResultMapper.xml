@@ -22,6 +22,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectResultVo"/>
         <where>  
             <if test="codeId != null "> and code_id = #{codeId}</if>
+            <if test="path != null  and path != ''"> and path = #{path}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="time != null  and time != ''"> and time = #{time}</if>
             <if test="params.beginCoverageRate != null and params.beginCoverageRate != '' and params.endCoverageRate != null and params.endCoverageRate != ''"> and coverage_rate between #{params.beginCoverageRate} and #{params.endCoverageRate}</if>
             <if test="resultName != null  and resultName != ''"> and result_name like concat('%', #{resultName}, '%')</if>
         </where>

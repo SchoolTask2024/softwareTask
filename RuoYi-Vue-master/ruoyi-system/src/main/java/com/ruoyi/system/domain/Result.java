@@ -9,37 +9,37 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * 代码运行对象 result
  * 
  * @author niujiazhen
- * @date 2024-04-25
+ * @date 2024-04-26
  */
 public class Result extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
-    /**  */
+    /** 运行结果id */
     private Long id;
 
-    /**  */
-    @Excel(name = "")
+    /** 代码id */
+    @Excel(name = "代码id")
     private Long codeId;
 
-    /**  */
-    @Excel(name = "")
+    /** 储存路径 */
+    @Excel(name = "储存路径")
     private String path;
 
-    /**  */
-    @Excel(name = "")
+    /** 执行人id */
+    @Excel(name = "执行人id")
     private Long userId;
 
-    /**  */
-    @Excel(name = "")
+    /** 运行时间 */
+    @Excel(name = "运行时间")
     private String time;
 
-    /**  */
-    @Excel(name = "")
+    /** 覆盖率 */
+    @Excel(name = "覆盖率")
     private String coverageRate;
 
-    /** $column.columnComment */
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
+    /** 测试名称 */
+    @Excel(name = "测试名称")
     private String resultName;
 
     public void setId(Long id) 
