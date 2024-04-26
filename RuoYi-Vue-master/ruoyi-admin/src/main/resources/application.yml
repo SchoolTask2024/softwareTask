@@ -133,3 +133,6 @@ code:
 test:
     path: D:/manager/test
     virtual: /test
+result:
+    path: D:/manager/result
+    virtual: /result

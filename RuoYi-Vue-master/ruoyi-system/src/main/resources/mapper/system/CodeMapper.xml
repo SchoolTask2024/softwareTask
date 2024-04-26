@@ -33,6 +33,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="type != null "> and type = #{type}</if>
         </where>
     </select>
+    <select id="selectPathById" parameterType="Long" resultType="String">
+        select path from code where id = #{id}
+    </select>
     
     <select id="selectCodeById" parameterType="Long" resultMap="CodeResult">
         <include refid="selectCodeVo"/>

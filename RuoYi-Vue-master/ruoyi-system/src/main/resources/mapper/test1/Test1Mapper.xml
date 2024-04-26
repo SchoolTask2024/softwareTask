@@ -38,6 +38,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectTest1Vo"/>
         where test1.id = #{id}
     </select>
+    <select id="selectPathsByIds" parameterType="Long">
+        select path from test1
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
         
     <insert id="insertTest1" parameterType="Test1" useGeneratedKeys="true" keyProperty="id">
         insert into test1

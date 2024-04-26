@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ResultTestMapper">
+    
+    <resultMap type="ResultTest" id="ResultTestResult">
+        <result property="id"    column="id"    />
+        <result property="resultId"    column="result_id"    />
+        <result property="testId"    column="test_id"    />
+    </resultMap>
+
+    <sql id="selectResultTestVo">
+        select id, result_id, test_id from result_test
+    </sql>
+
+    <select id="selectResultTestList" parameterType="ResultTest" resultMap="ResultTestResult">
+        <include refid="selectResultTestVo"/>
+        <where>  
+            <if test="resultId != null "> and result_id = #{resultId}</if>
+            <if test="testId != null "> and test_id = #{testId}</if>
+        </where>
+    </select>
+    
+    <select id="selectResultTestById" parameterType="Long" resultMap="ResultTestResult">
+        <include refid="selectResultTestVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertResultTest" parameterType="ResultTest" useGeneratedKeys="true" keyProperty="id">
+        insert into result_test
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="resultId != null">result_id,</if>
+            <if test="testId != null">test_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="resultId != null">#{resultId},</if>
+            <if test="testId != null">#{testId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateResultTest" parameterType="ResultTest">
+        update result_test
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="resultId != null">result_id = #{resultId},</if>
+            <if test="testId != null">test_id = #{testId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteResultTestById" parameterType="Long">
+        delete from result_test where id = #{id}
+    </delete>
+
+    <delete id="deleteResultTestByIds" parameterType="String">
+        delete from result_test where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteResultTestByResultIds" parameterType="String">
+        delete from result_test where result_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

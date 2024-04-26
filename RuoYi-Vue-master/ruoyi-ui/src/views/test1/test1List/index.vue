@@ -63,7 +63,7 @@
 
     <el-table v-loading="loading" :data="test1ListList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="测试id" align="center" prop="id" />
+<!--      <el-table-column label="测试id" align="center" prop="id" />-->
       <el-table-column label="测试名称" align="center" prop="name" />
       <el-table-column label="所属代码" align="center" prop="codeName" />
       <el-table-column label="导入人员" align="center" prop="importUser" />
