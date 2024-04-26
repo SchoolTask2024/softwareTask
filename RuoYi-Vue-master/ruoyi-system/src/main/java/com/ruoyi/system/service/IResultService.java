@@ -7,7 +7,7 @@ import com.ruoyi.system.domain.Result;
  * 代码运行Service接口
  * 
  * @author niujiazhen
- * @date 2024-04-25
+ * @date 2024-04-26
  */
 public interface IResultService 
 {

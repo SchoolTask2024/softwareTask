@@ -1,26 +1,50 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="" prop="codeId">
+      <el-form-item label="代码id" prop="codeId">
         <el-input
           v-model="queryParams.codeId"
-          placeholder="请输入"
+          placeholder="请输入代码id"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="" prop="coverageRate">
+      <el-form-item label="储存路径" prop="path">
+        <el-input
+          v-model="queryParams.path"
+          placeholder="请输入储存路径"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="执行人id" prop="userId">
+        <el-input
+          v-model="queryParams.userId"
+          placeholder="请输入执行人id"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="运行时间" prop="time">
+        <el-input
+          v-model="queryParams.time"
+          placeholder="请输入运行时间"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="覆盖率" prop="coverageRate">
         <el-input
           v-model="queryParams.coverageRate"
-          placeholder="请输入"
+          placeholder="请输入覆盖率"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="${comment}" prop="resultName">
+      <el-form-item label="测试名称" prop="resultName">
         <el-input
           v-model="queryParams.resultName"
-          placeholder="请输入${comment}"
+          placeholder="请输入测试名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -79,13 +103,13 @@
 
     <el-table v-loading="loading" :data="resultList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="" align="center" prop="id" />
-      <el-table-column label="" align="center" prop="codeId" />
-      <el-table-column label="" align="center" prop="path" />
-      <el-table-column label="" align="center" prop="userId" />
-      <el-table-column label="" align="center" prop="time" />
-      <el-table-column label="" align="center" prop="coverageRate" />
-      <el-table-column label="${comment}" align="center" prop="resultName" />
+      <el-table-column label="运行结果id" align="center" prop="id" />
+      <el-table-column label="代码id" align="center" prop="codeId" />
+      <el-table-column label="储存路径" align="center" prop="path" />
+      <el-table-column label="执行人id" align="center" prop="userId" />
+      <el-table-column label="运行时间" align="center" prop="time" />
+      <el-table-column label="覆盖率" align="center" prop="coverageRate" />
+      <el-table-column label="测试名称" align="center" prop="resultName" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -117,11 +141,23 @@
     <!-- 添加或修改代码运行对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="" prop="codeId">
-          <el-input v-model="form.codeId" placeholder="请输入" />
+        <el-form-item label="代码id" prop="codeId">
+          <el-input v-model="form.codeId" placeholder="请输入代码id" />
         </el-form-item>
-        <el-form-item label="${comment}" prop="resultName">
-          <el-input v-model="form.resultName" placeholder="请输入${comment}" />
+        <el-form-item label="储存路径" prop="path">
+          <el-input v-model="form.path" placeholder="请输入储存路径" />
+        </el-form-item>
+        <el-form-item label="执行人id" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入执行人id" />
+        </el-form-item>
+        <el-form-item label="运行时间" prop="time">
+          <el-input v-model="form.time" placeholder="请输入运行时间" />
+        </el-form-item>
+        <el-form-item label="覆盖率" prop="coverageRate">
+          <el-input v-model="form.coverageRate" placeholder="请输入覆盖率" />
+        </el-form-item>
+        <el-form-item label="测试名称" prop="resultName">
+          <el-input v-model="form.resultName" placeholder="请输入测试名称" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -162,6 +198,9 @@ export default {
         pageNum: 1,
         pageSize: 10,
         codeId: null,
+        path: null,
+        userId: null,
+        time: null,
         coverageRate: null,
         resultName: null
       },
