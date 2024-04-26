@@ -16,7 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectCodeVo">
-        select id, name, path, time, code.remark, type, version,su.user_name as importUser
+        select id, name, path, time, code.remark, type, versionra,su.user_name as importUser
         from code
         left join sys_user su on code.user_id = su.user_id
     </sql>
