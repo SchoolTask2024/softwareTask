@@ -71,13 +71,12 @@
 
     <el-table v-loading="loading" :data="resultList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="运行结果id" align="center" prop="id" />
-      <el-table-column label="代码id" align="center" prop="codeId" />
-      <el-table-column label="储存路径" align="center" prop="path" />
-      <el-table-column label="执行人id" align="center" prop="userId" />
+      <el-table-column label="运行名称" align="center" prop="resultName" />
+      <el-table-column label="代码名称" align="center" prop="codeName" />
+      <el-table-column label="执行人" align="center" prop="userName" />
       <el-table-column label="运行时间" align="center" prop="time" />
       <el-table-column label="覆盖率" align="center" prop="coverageRate" />
-      <el-table-column label="测试名称" align="center" prop="resultName" />
+
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button

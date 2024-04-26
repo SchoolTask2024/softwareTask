@@ -1,5 +1,6 @@
 package com.ruoyi.system.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -35,7 +36,7 @@ public class Result extends BaseEntity
     private Long userId;
 
     /** 运行时间 */
-    @Excel(name = "运行时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
 
     private ArrayList<Long> testIds;
@@ -48,6 +49,24 @@ public class Result extends BaseEntity
     @Excel(name = "测试名称")
     private String resultName;
 
+    private String userName;
+    private String codeName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getCodeName() {
+        return codeName;
+    }
+
+    public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
 
     public ArrayList<Long> getTestIds() {
         return testIds;

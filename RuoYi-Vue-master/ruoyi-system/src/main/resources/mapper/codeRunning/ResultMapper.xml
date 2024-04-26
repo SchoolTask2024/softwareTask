@@ -15,7 +15,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectResultVo">
-        select id, code_id, path, user_id, time, coverage_rate, result_name from result
+        select r.id, r.code_id, r.path, r.user_id, r.time, r.coverage_rate,
+               result_name ,su.user_name as userName, c.name as codeName
+        from result r
+        left join sys_user su on r.user_id = su.user_id
+        left join code c on c.id = r.code_id
     </sql>
 
     <select id="selectResultList" parameterType="Result" resultMap="ResultResult">
@@ -32,7 +36,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <select id="selectResultById" parameterType="Long" resultMap="ResultResult">
         <include refid="selectResultVo"/>
-        where id = #{id}
+        where r.id = #{id}
     </select>
         
     <insert id="insertResult" parameterType="Result" keyProperty="id">
