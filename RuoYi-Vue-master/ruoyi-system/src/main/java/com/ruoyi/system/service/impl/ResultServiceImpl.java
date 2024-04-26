@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ruoyi.system.mapper.CodeMapper;
+import com.ruoyi.system.mapper.ResultTestMapper;
 import com.ruoyi.system.mapper.Test1Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class ResultServiceImpl implements IResultService
 
     @Autowired
     private Test1Mapper test1Mapper;
+    @Autowired
+    private ResultTestMapper resultTestMapper;
     /**
      * 查询代码运行
      * 
@@ -85,6 +88,7 @@ public class ResultServiceImpl implements IResultService
     @Override
     public int deleteResultByIds(Long[] ids)
     {
+        resultTestMapper.deleteResultTestByResultIds(ids);
         return resultMapper.deleteResultByIds(ids);
     }
 

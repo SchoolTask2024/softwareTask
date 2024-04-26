@@ -58,4 +58,5 @@ public interface ResultTestMapper
      * @return 结果
      */
     public int deleteResultTestByIds(Long[] ids);
+    public int deleteResultTestByResultIds(Long[] ids);
 }
