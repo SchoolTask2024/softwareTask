@@ -1,38 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="代码id" prop="codeId">
-        <el-input
-          v-model="queryParams.codeId"
-          placeholder="请输入代码id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="储存路径" prop="path">
-        <el-input
-          v-model="queryParams.path"
-          placeholder="请输入储存路径"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="执行人id" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入执行人id"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="运行时间" prop="time">
-        <el-input
-          v-model="queryParams.time"
-          placeholder="请输入运行时间"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="覆盖率" prop="coverageRate">
         <el-input
           v-model="queryParams.coverageRate"
@@ -129,7 +97,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -141,8 +109,15 @@
     <!-- 添加或修改代码运行对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="代码id" prop="codeId">
-          <el-input v-model="form.codeId" placeholder="请输入代码id" />
+        <el-form-item label="运行代码" prop="codeId">
+          <el-select v-model="form.codeId" placeholder="请选择代码" @change="selectCode">
+            <el-option
+              v-for="item in codeOptions"
+              :key="item.id"
+              :label="item.name + ' v'+item.version"
+              :value="item.id"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="储存路径" prop="path">
           <el-input v-model="form.path" placeholder="请输入储存路径" />
@@ -170,6 +145,7 @@
 
 <script>
 import { listResult, getResult, delResult, addResult, updateResult } from "@/api/codeRunning/result";
+import {listCodeList} from "@/api/code/codeList";
 
 export default {
   name: "Result",
@@ -179,6 +155,7 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      codeOptions:[],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -212,6 +189,7 @@ export default {
     };
   },
   created() {
+    this.getCode();
     this.getList();
   },
   methods: {
@@ -223,6 +201,14 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    getCode(){
+      listCodeList().then(response =>{
+        this.codeOptions = response.rows;
+      })
+    },
+    selectCode(name){
+      console.log(name)
     },
     // 取消按钮
     cancel() {
