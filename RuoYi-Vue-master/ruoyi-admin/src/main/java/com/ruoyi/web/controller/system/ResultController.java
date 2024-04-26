@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -71,7 +72,9 @@ public class ResultController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody Result result)
     {
-        return toAjax(resultService.insertResult(result));
+        result.setUserId(getUserId());
+        result.setTime(LocalDateTime.now());
+        return toAjax(resultService.insertResult(resultService.calculateMcDc(result)));
     }
 
     /**

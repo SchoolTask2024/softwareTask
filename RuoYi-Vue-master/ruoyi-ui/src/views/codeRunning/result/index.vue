@@ -109,7 +109,7 @@
     <!-- 添加或修改代码运行对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="测试名称" prop="resultName">
+        <el-form-item label="运行名称" prop="resultName">
           <el-input v-model="form.resultName" placeholder="请输入测试名称" />
         </el-form-item>
         <el-form-item label="运行代码" prop="codeId">
@@ -220,7 +220,7 @@ export default {
       })
     },
     selectCode(name){
-      this.form.testIds = null;
+      this.form.testIds = [];
       getByCodeName(name).then(response=>{
         this.testOptions= response.data;
       })
@@ -240,7 +240,7 @@ export default {
         time: null,
         coverageRate: null,
         resultName: null,
-        testIds:null
+        testIds:[]
       };
       this.resetForm("form");
     },
@@ -289,6 +289,9 @@ export default {
               this.getList();
             });
           } else {
+            if (this.form.testIds.length<=0){
+              return  this.$modal.msgError("请选择至少一个测试用例");
+            }
             addResult(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;

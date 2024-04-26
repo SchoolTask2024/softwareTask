@@ -58,4 +58,6 @@ public interface IResultService
      * @return 结果
      */
     public int deleteResultById(Long id);
+
+    Result calculateMcDc(Result result);
 }
