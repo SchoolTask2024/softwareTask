@@ -27,6 +27,8 @@ public interface ITest1Service
      */
     public List<Test1> selectTest1List(Test1 test1);
 
+    List<Test1> selectTestListByCodeName(String codeName);
+
     /**
      * 新增测试列表
      * 

@@ -25,11 +25,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectTest1List" parameterType="Test1" resultMap="Test1Result">
         <include refid="selectTest1Vo"/>
-        <where>  
+        <where>
             <if test="name != null  and name != ''"> and test1.name like concat('%', #{name}, '%')</if>
         </where>
     </select>
-    
+    <select id="selectTestListByCodeName" parameterType="String" resultMap="Test1Result">
+        select id,name,code_name
+            from test1
+        where code_name = #{codeName}
+    </select>
     <select id="selectTest1ById" parameterType="Long" resultMap="Test1Result">
         <include refid="selectTest1Vo"/>
         where test1.id = #{id}

@@ -109,31 +109,34 @@
     <!-- 添加或修改代码运行对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="测试名称" prop="resultName">
+          <el-input v-model="form.resultName" placeholder="请输入测试名称" />
+        </el-form-item>
         <el-form-item label="运行代码" prop="codeId">
-          <el-select v-model="form.codeId" placeholder="请选择代码" @change="selectCode">
+          <el-select v-model="form.codeId" placeholder="请选择代码">
             <el-option
               v-for="item in codeOptions"
               :key="item.id"
               :label="item.name + ' v'+item.version"
               :value="item.id"
+              @click.native="selectCode(item.name)"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="储存路径" prop="path">
-          <el-input v-model="form.path" placeholder="请输入储存路径" />
+        <el-form-item label="用例" v-if="form.codeId!=null">
+          <el-select v-model="form.testIds" placeholder="请选择测试用例" multiple>
+            <el-option
+              v-for="item in testOptions"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item label="执行人id" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入执行人id" />
-        </el-form-item>
-        <el-form-item label="运行时间" prop="time">
-          <el-input v-model="form.time" placeholder="请输入运行时间" />
-        </el-form-item>
-        <el-form-item label="覆盖率" prop="coverageRate">
+        <el-form-item v-if="update" label="覆盖率" prop="coverageRate">
           <el-input v-model="form.coverageRate" placeholder="请输入覆盖率" />
         </el-form-item>
-        <el-form-item label="测试名称" prop="resultName">
-          <el-input v-model="form.resultName" placeholder="请输入测试名称" />
-        </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -146,6 +149,7 @@
 <script>
 import { listResult, getResult, delResult, addResult, updateResult } from "@/api/codeRunning/result";
 import {listCodeList} from "@/api/code/codeList";
+import {getByCodeName} from "@/api/test1/test1List";
 
 export default {
   name: "Result",
@@ -156,6 +160,8 @@ export default {
       // 选中数组
       ids: [],
       codeOptions:[],
+      testOptions:[],
+      update: false,
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -185,6 +191,12 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        resultName: [
+          { required: true, message: "名称不能为空", trigger: "blur" },
+        ],
+        codeId:[
+          { required: true, message: "运行代码不能为空", trigger: "blur" },
+        ]
       }
     };
   },
@@ -208,7 +220,10 @@ export default {
       })
     },
     selectCode(name){
-      console.log(name)
+      this.form.testIds = null;
+      getByCodeName(name).then(response=>{
+        this.testOptions= response.data;
+      })
     },
     // 取消按钮
     cancel() {
@@ -224,7 +239,8 @@ export default {
         userId: null,
         time: null,
         coverageRate: null,
-        resultName: null
+        resultName: null,
+        testIds:null
       };
       this.resetForm("form");
     },
@@ -248,11 +264,13 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
+      this.update = false;
       this.title = "添加代码运行";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.update = true;
       const id = row.id || this.ids
       getResult(id).then(response => {
         this.form = response.data;

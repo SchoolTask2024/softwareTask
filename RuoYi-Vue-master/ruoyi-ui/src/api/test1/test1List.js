@@ -16,6 +16,12 @@ export function getTest1List(id) {
     method: 'get'
   })
 }
+export function getByCodeName(codeName){
+  return request({
+    url: '/test1/test1List/getTestsByCodeName/'+ codeName ,
+    method: 'get',
+  })
+}
 
 // 新增测试列表
 export function addTest1List(data) {

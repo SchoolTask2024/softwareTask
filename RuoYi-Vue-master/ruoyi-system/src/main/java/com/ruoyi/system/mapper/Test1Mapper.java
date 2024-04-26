@@ -26,6 +26,7 @@ public interface Test1Mapper
      * @return 测试列表集合
      */
     public List<Test1> selectTest1List(Test1 test1);
+    public List<Test1> selectTestListByCodeName(String codeName);
 
     /**
      * 新增测试列表
