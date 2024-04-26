@@ -59,5 +59,7 @@ public interface CodeMapper
      */
     public int deleteCodeByIds(Long[] ids);
 
+    public String selectPathById(Long id);
+
 
 }

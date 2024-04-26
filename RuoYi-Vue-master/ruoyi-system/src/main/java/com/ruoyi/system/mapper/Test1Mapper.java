@@ -1,5 +1,6 @@
 package com.ruoyi.system.mapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.ruoyi.system.domain.Test1;
 
@@ -26,6 +27,7 @@ public interface Test1Mapper
      * @return 测试列表集合
      */
     public List<Test1> selectTest1List(Test1 test1);
+    public List<Test1> selectTestListByCodeName(String codeName);
 
     /**
      * 新增测试列表
@@ -58,4 +60,7 @@ public interface Test1Mapper
      * @return 结果
      */
     public int deleteTest1ByIds(Long[] ids);
+
+
+    public ArrayList<String> selectPathsByIds(Long[] ids);
 }

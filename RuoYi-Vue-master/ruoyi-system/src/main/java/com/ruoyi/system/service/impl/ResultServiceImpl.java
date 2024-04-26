@@ -1,6 +1,10 @@
 package com.ruoyi.system.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.ruoyi.system.mapper.CodeMapper;
+import com.ruoyi.system.mapper.Test1Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.ResultMapper;
@@ -11,7 +15,7 @@ import com.ruoyi.system.service.IResultService;
  * 代码运行Service业务层处理
  * 
  * @author niujiazhen
- * @date 2024-04-25
+ * @date 2024-04-26
  */
 @Service
 public class ResultServiceImpl implements IResultService 
@@ -19,6 +23,11 @@ public class ResultServiceImpl implements IResultService
     @Autowired
     private ResultMapper resultMapper;
 
+    @Autowired
+    private CodeMapper codeMapper;
+
+    @Autowired
+    private Test1Mapper test1Mapper;
     /**
      * 查询代码运行
      * 
@@ -90,4 +99,15 @@ public class ResultServiceImpl implements IResultService
     {
         return resultMapper.deleteResultById(id);
     }
+
+    /**
+     * 计算MC/DC
+     */
+    @Override
+    public void calculateMcDc(Result result){
+        String codePath = codeMapper.selectPathById(result.getCodeId());
+        ArrayList<String> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
+        result.setPath(codePath);
+    }
+
 }

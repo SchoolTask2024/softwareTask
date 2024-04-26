@@ -104,6 +104,12 @@ public class Test1Controller extends BaseController
         return success(test1Service.selectTest1ById(id));
     }
 
+    @GetMapping("/getTestsByCodeName/{codeName}")
+    public AjaxResult getByCodeName(@PathVariable("codeName") String codeName){
+
+        return success(test1Service.selectTestListByCodeName(codeName));
+    }
+
     /**
      * 新增测试列表
      */

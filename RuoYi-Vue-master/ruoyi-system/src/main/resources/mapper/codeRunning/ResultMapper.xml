@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.system.mapper.ResultMapper">
     
     <resultMap type="Result" id="ResultResult">
-        <result property="id"    column="id"    />
+        <id property="id"    column="id"    />
         <result property="codeId"    column="code_id"    />
         <result property="path"    column="path"    />
         <result property="userId"    column="user_id"    />
@@ -22,6 +22,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectResultVo"/>
         <where>  
             <if test="codeId != null "> and code_id = #{codeId}</if>
+            <if test="path != null  and path != ''"> and path = #{path}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="time != null  and time != ''"> and time = #{time}</if>
             <if test="params.beginCoverageRate != null and params.beginCoverageRate != '' and params.endCoverageRate != null and params.endCoverageRate != ''"> and coverage_rate between #{params.beginCoverageRate} and #{params.endCoverageRate}</if>
             <if test="resultName != null  and resultName != ''"> and result_name like concat('%', #{resultName}, '%')</if>
         </where>
@@ -32,10 +35,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertResult" parameterType="Result">
+    <insert id="insertResult" parameterType="Result" keyProperty="id">
         insert into result
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">id,</if>
             <if test="codeId != null">code_id,</if>
             <if test="path != null">path,</if>
             <if test="userId != null">user_id,</if>
@@ -44,7 +46,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="resultName != null">result_name,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">#{id},</if>
             <if test="codeId != null">#{codeId},</if>
             <if test="path != null">#{path},</if>
             <if test="userId != null">#{userId},</if>
