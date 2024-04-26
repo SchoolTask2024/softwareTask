@@ -59,5 +59,6 @@ public interface IResultService
      */
     public int deleteResultById(Long id);
 
-    Result calculateMcDc(Result result);
+
+    void calculateMcDc(Result result);
 }

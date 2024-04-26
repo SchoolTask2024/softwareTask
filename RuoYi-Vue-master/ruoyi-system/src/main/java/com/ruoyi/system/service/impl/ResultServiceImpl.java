@@ -28,7 +28,6 @@ public class ResultServiceImpl implements IResultService
 
     @Autowired
     private Test1Mapper test1Mapper;
-
     /**
      * 查询代码运行
      * 
@@ -105,12 +104,10 @@ public class ResultServiceImpl implements IResultService
      * 计算MC/DC
      */
     @Override
-    public Result calculateMcDc(Result result){
+    public void calculateMcDc(Result result){
         String codePath = codeMapper.selectPathById(result.getCodeId());
         ArrayList<String> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
-        System.out.println(codePath);
-        System.out.println(testPaths);
-        return result;
+        result.setPath(codePath);
     }
 
 }

@@ -7,7 +7,9 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.Result;
+import com.ruoyi.system.domain.ResultTest;
 import com.ruoyi.system.service.IResultService;
+import com.ruoyi.system.service.IResultTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,8 @@ public class ResultController extends BaseController
 {
     @Autowired
     private IResultService resultService;
+    @Autowired
+    private IResultTestService resultTestService;
 
     /**
      * 查询代码运行列表
@@ -74,7 +78,12 @@ public class ResultController extends BaseController
     {
         result.setUserId(getUserId());
         result.setTime(LocalDateTime.now());
-        return toAjax(resultService.insertResult(resultService.calculateMcDc(result)));
+        resultService.calculateMcDc(result);
+        resultService.insertResult(result);
+        for (Long id:result.getTestIds()){
+            resultTestService.insertResultTest(new ResultTest(result.getId(),id));
+        }
+        return toAjax(1);
     }
 
     /**
