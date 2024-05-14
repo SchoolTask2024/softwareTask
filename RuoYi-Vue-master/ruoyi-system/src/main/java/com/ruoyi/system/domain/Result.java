@@ -51,6 +51,15 @@ public class Result extends BaseEntity
 
     private String userName;
     private String codeName;
+    private List<Test1> test1List;
+
+    public List<Test1> getTest1List() {
+        return test1List;
+    }
+
+    public void setTest1List(List<Test1> test1List) {
+        this.test1List = test1List;
+    }
 
     public String getUserName() {
         return userName;

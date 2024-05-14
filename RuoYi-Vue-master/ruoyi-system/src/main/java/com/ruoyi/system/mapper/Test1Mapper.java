@@ -28,7 +28,7 @@ public interface Test1Mapper
      */
     public List<Test1> selectTest1List(Test1 test1);
     public List<Test1> selectTestListByCodeName(String codeName);
-
+    public List<Test1> selectByResultId(Long resultId);
     /**
      * 新增测试列表
      * 
@@ -63,4 +63,5 @@ public interface Test1Mapper
 
 
     public ArrayList<String> selectPathsByIds(Long[] ids);
+
 }

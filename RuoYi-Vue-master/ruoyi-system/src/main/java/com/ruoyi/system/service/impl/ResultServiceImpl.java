@@ -1,12 +1,16 @@
 package com.ruoyi.system.service.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.ruoyi.system.mapper.CodeMapper;
 import com.ruoyi.system.mapper.ResultTestMapper;
 import com.ruoyi.system.mapper.Test1Mapper;
+import com.ruoyi.system.service.ICoverageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.ResultMapper;
 import com.ruoyi.system.domain.Result;
@@ -31,6 +35,12 @@ public class ResultServiceImpl implements IResultService
     private Test1Mapper test1Mapper;
     @Autowired
     private ResultTestMapper resultTestMapper;
+    @Autowired
+    private ICoverageService coverageService;
+    @Value("${code.path}")
+    private String codeLocalPath;
+    @Value("${test.path}")
+    private String testLocalPath;
     /**
      * 查询代码运行
      * 
@@ -52,7 +62,11 @@ public class ResultServiceImpl implements IResultService
     @Override
     public List<Result> selectResultList(Result result)
     {
-        return resultMapper.selectResultList(result);
+        List<Result> resultList = resultMapper.selectResultList(result);
+        for(Result r:resultList){
+            r.setTest1List(test1Mapper.selectByResultId(r.getId()));
+        }
+        return resultList;
     }
 
     /**
@@ -112,6 +126,22 @@ public class ResultServiceImpl implements IResultService
         String codePath = codeMapper.selectPathById(result.getCodeId());
         ArrayList<String> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
         result.setPath(codePath);
+        File codeFile = new File(codeLocalPath +"/"+codePath);
+        if (!codeFile.exists() || !codeFile.isFile()) {
+            System.out.println("文件不存在");
+        }
+        else {
+            try{
+                String reportPath = coverageService.generateCoverageReport(codeFile);
+                System.out.println(reportPath);
+                System.out.println("-----------------------------------------------");
+            }catch (IOException ignored){
+                System.out.println("error");
+            }
+        }
+//        for (String path:testPaths){
+//            File file = new File(path);
+//        }
     }
 
 }
