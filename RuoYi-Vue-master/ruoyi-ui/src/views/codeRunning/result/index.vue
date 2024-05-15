@@ -209,6 +209,7 @@ export default {
       this.loading = true;
       listResult(this.queryParams).then(response => {
         this.resultList = response.rows;
+        console.log(this.resultList)
         this.total = response.total;
         this.loading = false;
       });

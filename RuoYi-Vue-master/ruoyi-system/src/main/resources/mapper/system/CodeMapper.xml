@@ -34,12 +34,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     <select id="selectPathById" parameterType="Long" resultType="String">
-        select path from code where id = #{id}
+        select path from code where code.id = #{id}
     </select>
     
     <select id="selectCodeById" parameterType="Long" resultMap="CodeResult">
-        <include refid="selectCodeVo"/>
-        where id = #{id}
+        select * from code
+        where code.id = #{id}
     </select>
         
     <insert id="insertCode" parameterType="Code" useGeneratedKeys="true" keyProperty="id">
