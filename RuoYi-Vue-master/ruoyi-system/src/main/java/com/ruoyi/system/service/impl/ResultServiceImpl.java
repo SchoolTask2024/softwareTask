@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.ruoyi.system.domain.Code;
 import com.ruoyi.system.domain.FIleLocation;
+import com.ruoyi.system.domain.Test1;
 import com.ruoyi.system.mapper.CodeMapper;
 import com.ruoyi.system.mapper.ResultTestMapper;
 import com.ruoyi.system.mapper.Test1Mapper;
@@ -129,9 +130,9 @@ public class ResultServiceImpl implements IResultService
         String codePath =code.getPath();
         String codeFilePath = codeLocalPath +"/"+codePath;
         ArrayList<FIleLocation> tests = new ArrayList<>();
-        ArrayList<String> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
-        for(String path:testPaths){
-            tests.add(new FIleLocation(path,testLocalPath+"/"+path));
+        ArrayList<Test1> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
+        for(Test1 test1:testPaths){
+            tests.add(new FIleLocation(test1.getName(),testLocalPath+"/"+test1.getPath()));
         }
         try {
             coverageService.generateCoverageReport(new FIleLocation(code.getName(),codeFilePath),tests);
