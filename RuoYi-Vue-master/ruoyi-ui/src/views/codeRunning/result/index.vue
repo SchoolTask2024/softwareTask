@@ -72,11 +72,26 @@
     <el-table v-loading="loading" :data="resultList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="运行名称" align="center" prop="resultName" />
-      <el-table-column label="代码名称" align="center" prop="codeName" />
+      <el-table-column label="代码" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.codeName + ' v' + scope.row.codeVersion }}
+        </template>
+      </el-table-column>
+      <el-table-column label="测试用例" align="center">
+        <template slot-scope="scope">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="scope.row.test1List.map(test => test.name).join(', ')"
+            placement="top"
+          >
+            <span>{{ scope.row.test1List.length }} 个用例</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column label="执行人" align="center" prop="userName" />
       <el-table-column label="运行时间" align="center" prop="time" />
       <el-table-column label="覆盖率" align="center" prop="coverageRate" />
-
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -209,7 +224,7 @@ export default {
       this.loading = true;
       listResult(this.queryParams).then(response => {
         this.resultList = response.rows;
-        console.log(this.resultList)
+        // console.log(this.resultList)
         this.total = response.total;
         this.loading = false;
       });

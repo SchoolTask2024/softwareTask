@@ -51,6 +51,7 @@ public class Result extends BaseEntity
 
     private String userName;
     private String codeName;
+    private Long codeVersion;
     private List<Test1> test1List;
 
     public List<Test1> getTest1List() {
@@ -59,6 +60,14 @@ public class Result extends BaseEntity
 
     public void setTest1List(List<Test1> test1List) {
         this.test1List = test1List;
+    }
+
+    public Long getCodeVersion() {
+        return codeVersion;
+    }
+
+    public void setCodeVersion(Long codeVersion) {
+        this.codeVersion = codeVersion;
     }
 
     public String getUserName() {
