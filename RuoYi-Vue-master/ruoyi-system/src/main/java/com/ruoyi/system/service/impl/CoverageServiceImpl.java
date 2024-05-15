@@ -36,22 +36,23 @@ public class CoverageServiceImpl implements ICoverageService {
             DirectorySourceFileLocator locator = new DirectorySourceFileLocator(new File("src/main/java"), "UTF-8", 4);
 
             // 创建HTML报告
-            IReportVisitor htmlVisitor = htmlFormatter.createVisitor(new FileOutputStream("target/site/jacoco/index.html"));
-            htmlVisitor.visitInfo(loader.getSessionInfoStore().getInfos(), loader.getExecutionDataStore().getContents());
-            htmlVisitor.visitBundle(loader.getExecutionDataStore(), locator);
-
-            // 创建XML报告
-            IReportVisitor xmlVisitor = xmlFormatter.createVisitor(new FileOutputStream("target/site/jacoco/report.xml"));
-            xmlVisitor.visitInfo(loader.getSessionInfoStore().getInfos(), loader.getExecutionDataStore().getContents());
-            xmlVisitor.visitBundle(loader.getExecutionDataStore(), locator);
+//            IReportVisitor htmlVisitor = htmlFormatter.createVisitor(new FileOutputStream("target/site/jacoco/index.html"));
+//            htmlVisitor.visitInfo(loader.getSessionInfoStore().getInfos(), loader.getExecutionDataStore().getContents());
+//            htmlVisitor.visitBundle(loader.getExecutionDataStore(), locator);
+//
+//            // 创建XML报告
+//            IReportVisitor xmlVisitor = xmlFormatter.createVisitor(new FileOutputStream("target/site/jacoco/report.xml"));
+//            xmlVisitor.visitInfo(loader.getSessionInfoStore().getInfos(), loader.getExecutionDataStore().getContents());
+//            xmlVisitor.visitBundle(loader.getExecutionDataStore(), locator);
 
             // 关闭报告访问者
-            htmlVisitor.visitEnd();
-            xmlVisitor.visitEnd();
+//            htmlVisitor.visitEnd();
+//            xmlVisitor.visitEnd();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return "success";
     }
 
 }

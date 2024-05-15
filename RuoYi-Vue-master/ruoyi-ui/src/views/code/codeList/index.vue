@@ -121,8 +121,8 @@
         <el-form-item label="代码名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入代码名称" />
         </el-form-item>
-        <el-form-item label="代码类型" prop="type">
-          <el-select v-model="form.type" placeholder="请选择代码类型">
+        <el-form-item label="代码类型" prop="type" v-if="form.type===null">
+          <el-select v-model="form.type" placeholder="请选择代码类型" @change="handleChange">
             <el-option
               v-for="dict in dict.type.code_type"
               :key="dict.value"
@@ -134,11 +134,12 @@
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
         </el-form-item>
-        <el-form-item label="代码路径" prop="path">
+        <el-form-item v-if="form.type!==null" label="代码文件" prop="path">
          <my-upload
            v-model="form.path"
            path="/code/codeList/upload"
            virtual="/code"
+           :file-type="fileType"
          />
         </el-form-item>
       </el-form>
@@ -162,6 +163,7 @@ export default {
     return {
       // 遮罩层
       loading: true,
+      fileType:['java'],
       // 选中数组
       ids: [],
       // 非单个禁用
@@ -213,6 +215,15 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    handleChange() {
+        console.log(this.form.type)
+        if(this.form.type==='1'){
+          this.fileType=['py']
+        }
+        if (this.form.type==='0'){
+          this.fileType=['java','jar']
+        }
     },
     // 取消按钮
     cancel() {
