@@ -9,5 +9,4 @@ import java.io.IOException;
 public interface ICoverageService {
     String generateCoverageReport(File codeFile) throws IOException;
 
-    void executeCommand(String command, File dir) throws IOException;
 }
