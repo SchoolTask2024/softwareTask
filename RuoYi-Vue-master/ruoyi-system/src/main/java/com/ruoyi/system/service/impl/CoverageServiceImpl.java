@@ -2,14 +2,15 @@ package com.ruoyi.system.service.impl;
 
 import com.ruoyi.system.service.ICoverageService;
 import org.springframework.stereotype.Service;
+import org.jacoco.core.tools.ExecFileLoader;
+import org.jacoco.report.DirectorySourceFileLocator;
+import org.jacoco.report.IReportVisitor;
+import org.jacoco.report.html.HTMLFormatter;
+import org.jacoco.report.xml.XMLFormatter;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * @author Arthur
@@ -17,58 +18,40 @@ import java.nio.file.Paths;
 @Service
 public class CoverageServiceImpl implements ICoverageService {
     @Override
-    public String generateCoverageReport(File codeFile) throws IOException {
-        // 设置工作目录
-        File workDir = new File(System.getProperty("java.io.tmpdir"), "codeCoverage");
-        if (!workDir.exists()) {
-            workDir.mkdirs();
-        }
-
-        // 复制上传的文件到工作目录
-        Path destination = Paths.get(workDir.getPath(), codeFile.getName());
-        Files.copy(codeFile.toPath(), destination);
-
-        // 编译并运行gcov
-        String fileName = codeFile.getName();
-        String compileCommand = String.format("gcc -fprofile-arcs -ftest-coverage %s -o %s", fileName, "test");
-        String runCommand = "./test";
-        String gcovCommand = String.format("gcov %s", fileName);
-
-        executeCommand(compileCommand, workDir);
-        executeCommand(runCommand, workDir);
-        executeCommand(gcovCommand, workDir);
-
-        // 使用lcov生成覆盖率报告
-        String lcovCommand = "lcov --capture --directory . --output-file coverage.info";
-        String genHtmlCommand = "genhtml coverage.info --output-directory out";
-
-        executeCommand(lcovCommand, workDir);
-        executeCommand(genHtmlCommand, workDir);
-
-        // 返回生成的覆盖率报告路径
-        return new File(workDir, "out/index.html").getAbsolutePath();
-    }
-    @Override
-    public void executeCommand(String command, File dir) throws IOException {
-        ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", command);
-        processBuilder.directory(dir);
-        processBuilder.redirectErrorStream(true);
-
-        Process process = processBuilder.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            System.out.println(line);
-        }
-
+    public String generateCoverageReport(File filePath) throws IOException {
         try {
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                throw new RuntimeException("Command failed: " + command);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Command interrupted: " + command, e);
+            // TODO: 执行你的测试代码
+
+            // 生成JaCoCo执行文件加载器
+            ExecFileLoader loader = new ExecFileLoader();
+            loader.load(new File("target/jacoco.exec"));
+
+            // 创建HTML格式化器
+            HTMLFormatter htmlFormatter = new HTMLFormatter();
+
+            // 创建XML格式化器
+            XMLFormatter xmlFormatter = new XMLFormatter();
+
+            // 创建目录源文件定位器
+            DirectorySourceFileLocator locator = new DirectorySourceFileLocator(new File("src/main/java"), "UTF-8", 4);
+
+            // 创建HTML报告
+            IReportVisitor htmlVisitor = htmlFormatter.createVisitor(new FileOutputStream("target/site/jacoco/index.html"));
+            htmlVisitor.visitInfo(loader.getSessionInfoStore().getInfos(), loader.getExecutionDataStore().getContents());
+            htmlVisitor.visitBundle(loader.getExecutionDataStore(), locator);
+
+            // 创建XML报告
+            IReportVisitor xmlVisitor = xmlFormatter.createVisitor(new FileOutputStream("target/site/jacoco/report.xml"));
+            xmlVisitor.visitInfo(loader.getSessionInfoStore().getInfos(), loader.getExecutionDataStore().getContents());
+            xmlVisitor.visitBundle(loader.getExecutionDataStore(), locator);
+
+            // 关闭报告访问者
+            htmlVisitor.visitEnd();
+            xmlVisitor.visitEnd();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
+
 }
