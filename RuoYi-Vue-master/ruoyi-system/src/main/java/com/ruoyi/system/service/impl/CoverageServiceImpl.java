@@ -4,13 +4,12 @@ import com.ruoyi.system.service.ICoverageService;
 import org.springframework.stereotype.Service;
 import org.jacoco.core.tools.ExecFileLoader;
 import org.jacoco.report.DirectorySourceFileLocator;
-import org.jacoco.report.IReportVisitor;
 import org.jacoco.report.html.HTMLFormatter;
 import org.jacoco.report.xml.XMLFormatter;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author Arthur
@@ -18,7 +17,7 @@ import java.io.IOException;
 @Service
 public class CoverageServiceImpl implements ICoverageService {
     @Override
-    public String generateCoverageReport(File filePath) throws IOException {
+    public String generateCoverageReport(String codePath, ArrayList<String> testPath) throws IOException {
         try {
             // TODO: 执行你的测试代码
 

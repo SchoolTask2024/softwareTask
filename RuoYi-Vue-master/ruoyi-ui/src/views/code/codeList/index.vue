@@ -217,7 +217,6 @@ export default {
       });
     },
     handleChange() {
-        console.log(this.form.type)
         if(this.form.type==='1'){
           this.fileType=['py']
         }

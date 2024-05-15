@@ -126,22 +126,17 @@ public class ResultServiceImpl implements IResultService
         String codePath = codeMapper.selectPathById(result.getCodeId());
         ArrayList<String> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
         result.setPath(codePath);
-        File codeFile = new File(codeLocalPath +"/"+codePath);
-        if (!codeFile.exists() || !codeFile.isFile()) {
-            System.out.println("文件不存在");
+        String codeFilePath = codeLocalPath +"/"+codePath;
+        ArrayList<String> tesFilePaths = new ArrayList<>();
+        for(String path:testPaths){
+            tesFilePaths.add(testLocalPath+"/"+path);
         }
-        else {
-            try{
-                String reportPath = coverageService.generateCoverageReport(codeFile);
-                System.out.println(reportPath);
-                System.out.println("-----------------------------------------------");
-            }catch (IOException ignored){
-                System.out.println("error");
-            }
+        try {
+            coverageService.generateCoverageReport(codeFilePath,tesFilePaths);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-//        for (String path:testPaths){
-//            File file = new File(path);
-//        }
+
     }
 
 }
