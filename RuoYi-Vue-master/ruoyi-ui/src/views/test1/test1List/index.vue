@@ -100,8 +100,8 @@
     <!-- 添加或修改测试列表对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="测试名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入测试名称" />
+        <el-form-item label="测试名称" prop="name" >
+          <el-input v-model="form.name" placeholder="请输入测试名称" :disabled="isAdd"/>
         </el-form-item>
         <el-form-item label="所属代码" prop="codeName">
             <el-select v-model="form.codeName" placeholder="请选择代码">
@@ -121,7 +121,8 @@
             v-model="form.path"
             path="/test1/test1List/upload"
             virtual="/test"
-            :file-type="['txt']"
+            :file-type="['txt','java']"
+            :originalFilename.sync="form.name"
           />
         </el-form-item>
       </el-form>
@@ -162,6 +163,7 @@ export default {
       // 是否显示弹出层
       open: false,
       codeOptions:[],
+      isAdd: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -249,12 +251,14 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.isAdd = true;
       this.open = true;
       this.title = "添加测试列表";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.isAdd = false;
       const id = row.id || this.ids
       getTest1List(id).then(response => {
         this.form = response.data;

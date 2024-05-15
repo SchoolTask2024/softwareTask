@@ -119,7 +119,7 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="代码名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入代码名称" />
+          <el-input v-model="form.name" placeholder="请输入代码名称" :disabled="isAdd"/>
         </el-form-item>
         <el-form-item label="代码类型" prop="type" v-if="form.type===null">
           <el-select v-model="form.type" placeholder="请选择代码类型" @change="handleChange">
@@ -137,6 +137,7 @@
         <el-form-item v-if="form.type!==null" label="代码文件" prop="path">
          <my-upload
            v-model="form.path"
+           :originalFilename.sync="form.name"
            path="/code/codeList/upload"
            virtual="/code"
            :file-type="fileType"
@@ -180,6 +181,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      isAdd: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -191,9 +193,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        name: [
-          { required: true, message: "名称不能为空", trigger: "blur" },
-        ],
+        // name: [
+        //   { required: true, message: "名称不能为空", trigger: "blur" },
+        // ],
         type: [
           { required: true, message: "代码类型不能为空", trigger: "blur" },
         ],
@@ -203,9 +205,11 @@ export default {
       }
     };
   },
+
   created() {
     this.getList();
   },
+
   methods: {
     /** 查询代码列表列表 */
     getList() {
@@ -224,6 +228,7 @@ export default {
           this.fileType=['java','jar']
         }
     },
+
     // 取消按钮
     cancel() {
       this.open = false;
@@ -262,12 +267,14 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.isAdd = true;
       this.open = true;
       this.title = "添加代码列表";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.isAdd = false;
       const id = row.id || this.ids
       getCodeList(id).then(response => {
         this.form = response.data;
@@ -313,5 +320,6 @@ export default {
       }, `codeList_${new Date().getTime()}.xlsx`)
     }
   }
+
 };
 </script>

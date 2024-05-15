@@ -1,57 +1,65 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.system.service.ICoverageService;
-import org.springframework.stereotype.Service;
+import org.jacoco.core.analysis.Analyzer;
+import org.jacoco.core.analysis.CoverageBuilder;
+import org.jacoco.core.analysis.IBundleCoverage;
+import org.jacoco.core.analysis.IClassCoverage;
 import org.jacoco.core.tools.ExecFileLoader;
 import org.jacoco.report.DirectorySourceFileLocator;
+import org.jacoco.report.FileMultiReportOutput;
+import org.jacoco.report.IReportVisitor;
 import org.jacoco.report.html.HTMLFormatter;
-import org.jacoco.report.xml.XMLFormatter;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * @author Arthur
+ * Service implementation for generating code coverage reports.
  */
 @Service
 public class CoverageServiceImpl implements ICoverageService {
     @Override
     public String generateCoverageReport(String codePath, ArrayList<String> testPath) throws IOException {
         try {
-            // TODO: 执行你的测试代码
+            // 1. 运行测试用例
+            for (String test : testPath) {
+                // 使用 ProcessBuilder 来运行测试用例
+                ProcessBuilder builder = new ProcessBuilder("mvn", "-Dtest=" + test, "test");
+                builder.redirectErrorStream(true);
+                Process process = builder.start();
+                process.waitFor();
+            }
 
-            // 生成JaCoCo执行文件加载器
-            ExecFileLoader loader = new ExecFileLoader();
-            loader.load(new File("target/jacoco.exec"));
+            // 2. 加载 JaCoCo 执行数据
+            ExecFileLoader execFileLoader = new ExecFileLoader();
+            execFileLoader.load(new File("target/jacoco.exec"));
 
-            // 创建HTML格式化器
+            // 3. 分析覆盖率
+            CoverageBuilder coverageBuilder = new CoverageBuilder();
+            Analyzer analyzer = new Analyzer(execFileLoader.getExecutionDataStore(), coverageBuilder);
+            analyzer.analyzeAll(new File(codePath));
+
+            // 4. 生成 HTML 覆盖率报告
             HTMLFormatter htmlFormatter = new HTMLFormatter();
+            File reportDir = new File("target/coverage-report");
+            IReportVisitor visitor = htmlFormatter.createVisitor(new FileMultiReportOutput(reportDir));
 
-            // 创建XML格式化器
-            XMLFormatter xmlFormatter = new XMLFormatter();
+            visitor.visitInfo(execFileLoader.getSessionInfoStore().getInfos(),
+                    execFileLoader.getExecutionDataStore().getContents());
 
-            // 创建目录源文件定位器
-            DirectorySourceFileLocator locator = new DirectorySourceFileLocator(new File("src/main/java"), "UTF-8", 4);
+            for (IClassCoverage cc : coverageBuilder.getClasses()) {
+                visitor.visitBundle((IBundleCoverage) cc, new DirectorySourceFileLocator(new File(codePath), "utf-8", 4));
+            }
 
-            // 创建HTML报告
-//            IReportVisitor htmlVisitor = htmlFormatter.createVisitor(new FileOutputStream("target/site/jacoco/index.html"));
-//            htmlVisitor.visitInfo(loader.getSessionInfoStore().getInfos(), loader.getExecutionDataStore().getContents());
-//            htmlVisitor.visitBundle(loader.getExecutionDataStore(), locator);
-//
-//            // 创建XML报告
-//            IReportVisitor xmlVisitor = xmlFormatter.createVisitor(new FileOutputStream("target/site/jacoco/report.xml"));
-//            xmlVisitor.visitInfo(loader.getSessionInfoStore().getInfos(), loader.getExecutionDataStore().getContents());
-//            xmlVisitor.visitBundle(loader.getExecutionDataStore(), locator);
+            visitor.visitEnd();
 
-            // 关闭报告访问者
-//            htmlVisitor.visitEnd();
-//            xmlVisitor.visitEnd();
-
-        } catch (IOException e) {
+            return "target/coverage-report/index.html";
+        } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return "success";
     }
-
 }
