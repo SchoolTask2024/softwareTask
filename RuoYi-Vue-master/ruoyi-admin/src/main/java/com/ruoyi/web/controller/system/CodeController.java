@@ -1,6 +1,8 @@
 package com.ruoyi.web.controller.system;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -121,12 +123,15 @@ public class CodeController extends BaseController
     @PreAuthorize("@ss.hasPermi('code:codeList:add')")
     @Log(title = "上传代码文件", businessType = BusinessType.INSERT)
     @PostMapping("/upload")
-    public AjaxResult upload(MultipartFile file)throws Exception
-    {
-        try
-        {
+    public AjaxResult upload(MultipartFile file) {
+        try {
             // 上传文件路径
             String filePath = codePath;
+            // 检查路径是否存在，如果不存在则创建它
+            File directory = new File(filePath);
+            if (!directory.exists()) {
+                directory.mkdirs(); // 创建多级目录
+            }
             // 获取当前时间戳作为文件名
             String timeStamp = String.valueOf(System.currentTimeMillis());
             // 获取文件的原始名称
@@ -137,21 +142,31 @@ public class CodeController extends BaseController
             String newFileName = timeStamp + fileExtension;
             // 在指定路径下创建新文件
             File newFile = new File(filePath + File.separator + newFileName);
-            file.transferTo(newFile);
+
+            // 将上传文件的内容写入新文件
+            try (InputStream inputStream = file.getInputStream();
+                 FileOutputStream outputStream = new FileOutputStream(newFile)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+
             // 构造返回结果
             AjaxResult ajax = AjaxResult.success();
-//            ajax.put("url", filePath + "/" + newFileName);
+            // ajax.put("url", filePath + "/" + newFileName);
             ajax.put("fileName", newFileName);
             ajax.put("newFileName", newFileName);
             ajax.put("originalFilename", originalFilename);
 
             return ajax;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }
     }
+
+
 
     /**
      * 修改代码列表

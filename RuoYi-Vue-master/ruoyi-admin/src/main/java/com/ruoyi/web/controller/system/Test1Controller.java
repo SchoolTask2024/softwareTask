@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -80,7 +82,15 @@ public class Test1Controller extends BaseController
             String newFileName = timeStamp + fileExtension;
             // 在指定路径下创建新文件
             File newFile = new File(filePath + File.separator + newFileName);
-            file.transferTo(newFile);
+            // 将上传文件的内容写入新文件
+            try (InputStream inputStream = file.getInputStream();
+                 FileOutputStream outputStream = new FileOutputStream(newFile)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
             // 构造返回结果
             AjaxResult ajax = AjaxResult.success();
             ajax.put("fileName", newFileName);
