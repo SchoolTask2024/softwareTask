@@ -121,7 +121,7 @@
             v-model="form.path"
             path="/test1/test1List/upload"
             virtual="/test"
-            :file-type="['txt','java']"
+            :file-type="['txt','java','c']"
             :originalFilename.sync="form.name"
           />
         </el-form-item>

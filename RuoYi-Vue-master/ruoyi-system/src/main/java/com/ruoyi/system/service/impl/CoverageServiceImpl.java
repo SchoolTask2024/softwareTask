@@ -2,10 +2,8 @@ package com.ruoyi.system.service.impl;
 
 import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.service.ICoverageService;
-import org.apache.commons.io.IOUtils;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
-import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.tools.ExecFileLoader;
 import org.jacoco.report.DirectorySourceFileLocator;
 import org.jacoco.report.IReportVisitor;
@@ -27,7 +25,55 @@ public class CoverageServiceImpl implements ICoverageService {
         //需要补充
         return null;
     }
+    @Override
+    public String generateC(String codePath, ArrayList<String> execFilePaths) {
+        try {
+            // Extract the base name of the code file without extension
+            String baseName = new File(codePath).getName().replace(".c", "");
 
+            // Step 1: Compile the code with coverage flags
+            String compileCommand = String.format("gcc -fprofile-arcs -ftest-coverage -o %s %s", baseName, codePath);
+            runCommand(compileCommand);
+
+            // Step 2: Run each test file
+            for (String execFilePath : execFilePaths) {
+                String execCommand = String.format("./%s", execFilePath);
+                runCommand(execCommand); // Assume the execFilePaths are the paths to the executables
+            }
+
+            // Step 3: Generate the coverage report using gcov
+            String gcovCommand = String.format("gcov %s", codePath);
+            runCommand(gcovCommand);
+
+            // Step 4: Read and return the coverage report
+            String reportFileName = baseName + ".c.gcov";
+            return readReport(reportFileName);
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void runCommand(String command) throws IOException, InterruptedException {
+        Process process = Runtime.getRuntime().exec(command);
+        process.waitFor();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            System.out.println(line); // Optionally log the output
+        }
+    }
+
+    private String readReport(String reportFileName) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(reportFileName));
+        StringBuilder reportContent = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            reportContent.append(line).append("\n");
+        }
+        return reportContent.toString();
+    }
     public static String generateCoverageReport1(String codePath, ArrayList<String> execFilePaths) {
         try {
             // 生成JaCoCo执行文件加载器

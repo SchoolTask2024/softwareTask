@@ -221,6 +221,9 @@ export default {
       });
     },
     handleChange() {
+      if(this.form.type==='2'){
+        this.fileType=['c']
+      }
         if(this.form.type==='1'){
           this.fileType=['py']
         }
