@@ -167,4 +167,34 @@ public class CoverageServiceImpl implements ICoverageService {
             return ""; // 或者抛出异常
         }
     }
+
+
+
+
+
+
+
+
+    //python report
+    public  String generatePythonCoverageReport(ArrayList<String>path, String type,String name){
+        String message = null;
+        try {
+            String pythonScriptDir = path.get(0);
+            ProcessBuilder pb = new ProcessBuilder(type, name);
+            pb.directory(new File(pythonScriptDir));
+
+            Process process = pb.start();
+
+            BufferedReader reader1 = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"));
+            String line1;
+            while ((line1 = reader1.readLine()) != null) {
+                // 只打印包含类别名称的行
+                System.out.println(line1);
+            }
+            //输出报错行数
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }
