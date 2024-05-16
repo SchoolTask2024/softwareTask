@@ -21,8 +21,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join sys_user su on code.user_id = su.user_id
         order by code.name
     </sql>
-    <select id="selectCodeName">
-        select DISTINCT name
+    <select id="selectCodeName" resultMap="CodeResult">
+        select DISTINCT name,type
         from code
     </select>
 

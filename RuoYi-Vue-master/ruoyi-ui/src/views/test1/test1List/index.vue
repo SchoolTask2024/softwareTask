@@ -103,12 +103,12 @@
         <el-form-item label="测试名称" prop="name" >
           <el-input v-model="form.name" placeholder="请输入测试名称" :disabled="isAdd"/>
         </el-form-item>
-        <el-form-item label="所属代码" prop="codeName">
-            <el-select v-model="form.codeName" placeholder="请选择代码">
+        <el-form-item label="所属代码" prop="codeName" v-if="form.codeName==null">
+            <el-select v-model="form.codeName" placeholder="请选择代码" @change="setCode">
               <el-option
                 v-for="item in codeOptions"
-                :key="item"
-                :label="item"
+                :key="item.name"
+                :label="item.name"
                 :value="item"
               />
             </el-select>
@@ -116,12 +116,12 @@
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
         </el-form-item>
-        <el-form-item label="测试路径" prop="path">
+        <el-form-item label="测试路径" prop="path" v-if="form.codeName!=null">
           <my-upload
             v-model="form.path"
             path="/test1/test1List/upload"
             virtual="/test"
-            :file-type="['txt','java','c']"
+            :file-type="fileType"
             :originalFilename.sync="form.name"
           />
         </el-form-item>
@@ -138,9 +138,15 @@
 import { listTest1List, getTest1List, delTest1List, addTest1List, updateTest1List } from "@/api/test1/test1List";
 import MyUpload from "@/components/MyUpload/index.vue";
 import {getCodeName, listCodeList} from "@/api/code/codeList";
+import item from "@/layout/components/Sidebar/Item.vue";
 
 export default {
   name: "Test1List",
+  computed: {
+    item() {
+      return item
+    }
+  },
   components: {MyUpload},
   data() {
     return {
@@ -148,6 +154,7 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      fileType:['txt','java','c'],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -200,6 +207,18 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    setCode(item) {
+        const type = item.type
+        if (type === 0) {
+          this.fileType = ['java,jar']
+        }
+        if (type === 1) {
+          this.fileType = ['py']
+        }
+        if (type === 2) {
+          this.fileType = ['c']
+        }
     },
     getCode(){
       getCodeName().then(response=>{
@@ -273,12 +292,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
+            this.form.codeName = this.form.codeName.name;
             updateTest1List(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
+            this.form.codeName = this.form.codeName.name;
             addTest1List(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
