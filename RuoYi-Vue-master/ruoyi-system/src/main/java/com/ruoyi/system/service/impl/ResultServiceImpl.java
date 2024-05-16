@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ruoyi.system.domain.Code;
+import com.ruoyi.system.domain.FIleLocation;
+import com.ruoyi.system.domain.Test1;
 import com.ruoyi.system.mapper.CodeMapper;
 import com.ruoyi.system.mapper.ResultTestMapper;
 import com.ruoyi.system.mapper.Test1Mapper;
@@ -123,16 +126,16 @@ public class ResultServiceImpl implements IResultService
      */
     @Override
     public void calculateMcDc(Result result){
-        String codePath = codeMapper.selectPathById(result.getCodeId());
-        ArrayList<String> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
-        result.setPath(codePath);
+        Code code =  codeMapper.selectPathById(result.getCodeId());
+        String codePath =code.getPath();
         String codeFilePath = codeLocalPath +"/"+codePath;
-        ArrayList<String> tesFilePaths = new ArrayList<>();
-        for(String path:testPaths){
-            tesFilePaths.add(testLocalPath+"/"+path);
+        ArrayList<FIleLocation> tests = new ArrayList<>();
+        ArrayList<Test1> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
+        for(Test1 test1:testPaths){
+            tests.add(new FIleLocation(test1.getName(),testLocalPath+"/"+test1.getPath()));
         }
         try {
-            coverageService.generateCoverageReport(codeFilePath,tesFilePaths);
+            coverageService.generateCoverageReport(new FIleLocation(code.getName(),codeFilePath),tests);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

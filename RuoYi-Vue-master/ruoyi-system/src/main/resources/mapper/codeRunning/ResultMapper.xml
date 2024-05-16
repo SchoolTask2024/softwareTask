@@ -16,7 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <sql id="selectResultVo">
         select r.id, r.code_id, r.path, r.user_id, r.time, r.coverage_rate,
-               result_name ,su.user_name as userName, c.name as codeName
+               result_name ,su.user_name as userName, c.name as codeName,c.version as codeVersion
         from result r
         left join sys_user su on r.user_id = su.user_id
         left join code c on c.id = r.code_id

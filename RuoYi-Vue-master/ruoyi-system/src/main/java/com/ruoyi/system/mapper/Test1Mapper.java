@@ -62,6 +62,6 @@ public interface Test1Mapper
     public int deleteTest1ByIds(Long[] ids);
 
 
-    public ArrayList<String> selectPathsByIds(Long[] ids);
+    public ArrayList<Test1> selectPathsByIds(Long[] ids);
 
 }
