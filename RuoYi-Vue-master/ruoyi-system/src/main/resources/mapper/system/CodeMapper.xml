@@ -34,7 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     <select id="selectPathById" parameterType="Long" resultMap="CodeResult">
-        select path,name from code where code.id = #{id}
+        select path,name,type from code where code.id = #{id}
     </select>
     
     <select id="selectCodeById" parameterType="Long" resultMap="CodeResult">

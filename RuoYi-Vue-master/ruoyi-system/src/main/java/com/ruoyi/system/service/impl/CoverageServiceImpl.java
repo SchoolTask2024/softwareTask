@@ -31,21 +31,29 @@ public class CoverageServiceImpl implements ICoverageService {
             // Extract the base name of the code file without extension
             String baseName = new File(codePath).getName().replace(".c", "");
 
-            // Step 1: Compile the code with coverage flags
+            // Step 1: Compile the main code with coverage flags
             String compileCommand = String.format("gcc -fprofile-arcs -ftest-coverage -o %s %s", baseName, codePath);
             runCommand(compileCommand);
 
-            // Step 2: Run each test file
-            for (String execFilePath : execFilePaths) {
-                String execCommand = String.format("./%s", execFilePath);
-                runCommand(execCommand); // Assume the execFilePaths are the paths to the executables
+            // Step 2: Compile each test file
+            for (String testPath : execFilePaths) {
+                String testBaseName = new File(testPath).getName().replace(".c", "");
+                String testCompileCommand = String.format("gcc -fprofile-arcs -ftest-coverage -o %s %s", testBaseName, testPath);
+                runCommand(testCompileCommand);
             }
 
-            // Step 3: Generate the coverage report using gcov
+            // Step 3: Run each test executable
+            for (String testPath : execFilePaths) {
+                String testBaseName = new File(testPath).getName().replace(".c", "");
+                String execCommand = String.format("./%s", testBaseName);
+                runCommand(execCommand);
+            }
+
+            // Step 4: Generate the coverage report using gcov
             String gcovCommand = String.format("gcov %s", codePath);
             runCommand(gcovCommand);
 
-            // Step 4: Read and return the coverage report
+            // Step 5: Read and return the coverage report
             String reportFileName = baseName + ".c.gcov";
             return readReport(reportFileName);
 

@@ -126,19 +126,37 @@ public class ResultServiceImpl implements IResultService
      */
     @Override
     public void calculateMcDc(Result result){
-        Code code =  codeMapper.selectPathById(result.getCodeId());
-        String codePath =code.getPath();
-        String codeFilePath = codeLocalPath +"/"+codePath;
-        ArrayList<FIleLocation> tests = new ArrayList<>();
-        ArrayList<Test1> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
-        for(Test1 test1:testPaths){
-            tests.add(new FIleLocation(test1.getName(),testLocalPath+"/"+test1.getPath()));
+        Code code = codeMapper.selectPathById(result.getCodeId());
+        //java
+        if(code.getType() ==0){
+
         }
-        try {
-            coverageService.generateCoverageReport(new FIleLocation(code.getName(),codeFilePath),tests);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        //python
+        else if(code.getType() ==1){
+
         }
+        //c
+        else if(code.getType() ==2){
+            String codeFilePath = codeLocalPath +"/"+code.getPath();
+            ArrayList<String> tests = new ArrayList<>();
+            ArrayList<Test1> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
+            for(Test1 test1:testPaths){
+                tests.add(testLocalPath+"/"+test1.getPath());
+            }
+            coverageService.generateC(codeFilePath,tests);
+        }
+//        String codePath =code.getPath();
+//        String codeFilePath = codeLocalPath +"/"+codePath;
+//        ArrayList<FIleLocation> tests = new ArrayList<>();
+//        ArrayList<Test1> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
+//        for(Test1 test1:testPaths){
+//            tests.add(new FIleLocation(test1.getName(),testLocalPath+"/"+test1.getPath()));
+//        }
+//        try {
+//            coverageService.generateCoverageReport(new FIleLocation(code.getName(),codeFilePath),tests);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 

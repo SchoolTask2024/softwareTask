@@ -251,6 +251,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.getCode();
       this.isAdd = true;
       this.open = true;
       this.title = "添加测试列表";
@@ -258,6 +259,7 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.getCode();
       this.isAdd = false;
       const id = row.id || this.ids
       getTest1List(id).then(response => {
