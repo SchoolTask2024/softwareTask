@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.service.ICoverageService;
 import org.apache.commons.io.IOUtils;
 import org.jacoco.core.analysis.Analyzer;
@@ -20,8 +21,14 @@ import java.util.List;
 @Service
 public class CoverageServiceImpl implements ICoverageService {
 
+    //获取MC/DC覆盖率
     @Override
-    public String generateCoverageReport(String codePath, ArrayList<String> execFilePaths) {
+    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPath) {
+        //需要补充
+        return null;
+    }
+
+    public static String generateCoverageReport1(String codePath, ArrayList<String> execFilePaths) {
         try {
             // 生成JaCoCo执行文件加载器
             ExecFileLoader loader = new ExecFileLoader();
@@ -83,13 +90,8 @@ public class CoverageServiceImpl implements ICoverageService {
         }
 
         // 生成覆盖率报告
-        try {
-            String result = coverageService.generateCoverageReport(codePath, execFilePaths);
-            System.out.println("Coverage Report Generation Result: " + result);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Failed to generate coverage report: " + e.getMessage());
-        }
+        String result = generateCoverageReport1(codePath, execFilePaths);
+        System.out.println("Coverage Report Generation Result: " + result);
     }
 
     private static String executeTestAndGenerateExecFile(String testClassName) {
