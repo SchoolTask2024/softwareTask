@@ -143,7 +143,7 @@ public class ResultServiceImpl implements IResultService
             for(Test1 test1:testPaths){
                 tests.add(testLocalPath+"/"+test1.getPath());
             }
-            coverageService.generateC(codeFilePath,tests);
+            result.setCoverageRate(coverageService.generateC(codeFilePath,tests));
         }
 //        String codePath =code.getPath();
 //        String codeFilePath = codeLocalPath +"/"+codePath;

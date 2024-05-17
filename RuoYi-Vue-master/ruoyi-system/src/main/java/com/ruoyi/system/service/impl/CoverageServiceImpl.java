@@ -15,6 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class CoverageServiceImpl implements ICoverageService {
@@ -26,62 +28,124 @@ public class CoverageServiceImpl implements ICoverageService {
         return null;
     }
     @Override
-    public String generateC(String codePath, ArrayList<String> execFilePaths) {
+    public String generateC(String cFilePath, ArrayList<String> testFilePaths) {
+        File cFile = new File(cFilePath);
+        if (!cFile.exists()) {
+            return "文件不存在：" + cFilePath;
+        }
+
+        StringBuilder combinedTestContent = new StringBuilder();
+
+        // 读取测试文件内容并合并
+        for (String testFilePath : testFilePaths) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(testFilePath))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    combinedTestContent.append(line).append(" ");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "读取测试文件失败：" + e.getMessage();
+            }
+        }
         try {
-            // Extract the base name of the code file without extension
-            String baseName = new File(codePath).getName().replace(".c", "");
+            // 获取文件名和目录
+            String fileName = cFile.getName();
+            String fileDir = cFile.getParent();
+            String exeName = fileName.replace(".c", ".exe");
 
-            // Step 1: Compile the main code with coverage flags
-            String compileCommand = String.format("gcc -fprofile-arcs -ftest-coverage -o %s %s", baseName, codePath);
-            runCommand(compileCommand);
-
-            // Step 2: Compile each test file
-            for (String testPath : execFilePaths) {
-                String testBaseName = new File(testPath).getName().replace(".c", "");
-                String testCompileCommand = String.format("gcc -fprofile-arcs -ftest-coverage -o %s %s", testBaseName, testPath);
-                runCommand(testCompileCommand);
+            // 编译C代码
+            ProcessBuilder gccBuilder = new ProcessBuilder("gcc", "-fprofile-arcs", "-ftest-coverage", "-o", exeName, fileName);
+            gccBuilder.directory(new File(fileDir));
+            Process gccProcess = gccBuilder.start();
+            if (gccProcess.waitFor() != 0) {
+                return "编译失败: " + getProcessOutput(gccProcess);
             }
 
-            // Step 3: Run each test executable
-            for (String testPath : execFilePaths) {
-                String testBaseName = new File(testPath).getName().replace(".c", "");
-                String execCommand = String.format("./%s", testBaseName);
-                runCommand(execCommand);
+            // 运行生成的可执行文件并传递合并后的测试文件内容作为参数
+            String[] parameters = combinedTestContent.toString().split(" ");
+            List<String> command = new ArrayList<>();
+            command.add("cmd");
+            command.add("/c");
+            command.add(exeName);
+            command.addAll(Arrays.asList(parameters));
+            ProcessBuilder runBuilder = new ProcessBuilder(command);
+            runBuilder.directory(new File(fileDir));
+            Process runProcess = runBuilder.start();
+            if (runProcess.waitFor() != 0) {
+                return "运行失败: " + getProcessOutput(runProcess);
             }
 
-            // Step 4: Generate the coverage report using gcov
-            String gcovCommand = String.format("gcov %s", codePath);
-            runCommand(gcovCommand);
+            // 生成覆盖率报告
+            ProcessBuilder gcovBuilder = new ProcessBuilder("gcov", fileName);
+            gcovBuilder.directory(new File(fileDir));
+            Process gcovProcess = gcovBuilder.start();
+            if (gcovProcess.waitFor() != 0) {
+                return "生成覆盖率报告失败: " + getProcessOutput(gcovProcess);
+            }
 
-            // Step 5: Read and return the coverage report
-            String reportFileName = baseName + ".c.gcov";
-            return readReport(reportFileName);
+            // 读取并解析覆盖率报告
+            return parseGcovReport(new File(fileDir, fileName + ".gcov").getAbsolutePath());
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            return null;
+            return "执行失败：" + e.getMessage();
         }
+    }
+    // 获取进程输出
+    private String getProcessOutput(Process process) throws IOException {
+        StringBuilder output = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+        }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+        }
+        return output.toString();
     }
 
-    private void runCommand(String command) throws IOException, InterruptedException {
-        Process process = Runtime.getRuntime().exec(command);
-        process.waitFor();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            System.out.println(line); // Optionally log the output
+    // 解析gcov生成的报告文件并计算覆盖率
+    private String parseGcovReport(String gcovFilePath) throws IOException {
+        int totalLines = 0;
+        int executedLines = 0;
+        StringBuilder report = new StringBuilder();
+        File gcovFile = new File(gcovFilePath);
+        if (!gcovFile.exists()) {
+            return "gcov报告文件不存在：" + gcovFilePath;
         }
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(gcovFile)))) {
+            String line;
+            Pattern pattern = Pattern.compile("^\\s*(\\d+):\\s*(\\d+|-)");
+
+            while ((line = reader.readLine()) != null) {
+                report.append(line).append("\n");
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    String execCount = matcher.group(2);
+                    if (!execCount.equals("-")) {
+                        int count = Integer.parseInt(execCount);
+                        if (count > 0) {
+                            executedLines++;
+                        }
+                    }
+                }
+                totalLines = Integer.parseInt(line.split(":")[1].trim());
+            }
+        }
+
+        double coverage = totalLines > 0 ? (double) executedLines / totalLines * 100 : 0;
+        report.append(String.format("总行数: %d, 执行行数: %d, 覆盖率: %.2f%%", totalLines, executedLines, coverage));
+//        return report.toString();
+        return String.valueOf(coverage);
     }
 
-    private String readReport(String reportFileName) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(reportFileName));
-        StringBuilder reportContent = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            reportContent.append(line).append("\n");
-        }
-        return reportContent.toString();
-    }
     public static String generateCoverageReport1(String codePath, ArrayList<String> execFilePaths) {
         try {
             // 生成JaCoCo执行文件加载器
@@ -167,10 +231,6 @@ public class CoverageServiceImpl implements ICoverageService {
             return ""; // 或者抛出异常
         }
     }
-
-
-
-
 
 
 

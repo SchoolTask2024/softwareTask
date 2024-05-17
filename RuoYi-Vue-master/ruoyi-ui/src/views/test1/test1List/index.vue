@@ -211,13 +211,13 @@ export default {
     setCode(item) {
         const type = item.type
         if (type === 0) {
-          this.fileType = ['java,jar']
+          this.fileType = ['txt']
         }
         if (type === 1) {
-          this.fileType = ['py']
+          this.fileType = ['txt']
         }
         if (type === 2) {
-          this.fileType = ['c']
+          this.fileType = ['txt']
         }
     },
     getCode(){
