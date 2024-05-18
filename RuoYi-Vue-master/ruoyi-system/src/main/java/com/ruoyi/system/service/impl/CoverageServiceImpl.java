@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.system.domain.CoverageData;
 import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.service.ICoverageService;
 import org.jacoco.core.analysis.Analyzer;
@@ -27,6 +28,158 @@ public class CoverageServiceImpl implements ICoverageService {
         //需要补充
         return null;
     }
+    /**
+     * 生成C语言的MCDC覆盖率
+     * @param cFilePath C文件路径
+     * @param testFilePaths 测试文件路径列表
+     * @return 返回行覆盖率获取MC/DC覆盖率
+     */
+    @Override
+    public String generateCMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
+        //获取C文件
+        File cFile = new File(cFilePath);
+        if (!cFile.exists()) {
+            return "文件不存在：" + cFilePath;
+        }
+        ArrayList<CoverageData> cData = new ArrayList<>();
+        try {
+            // 编译C代码
+            String fileName = cFile.getName();
+            String fileDir = cFile.getParent();
+            String exeName = fileName.replace(".c", ".exe");
+            ProcessBuilder gccBuilder = new ProcessBuilder("gcc", "-fprofile-arcs", "-ftest-coverage", "-o", exeName, fileName);
+            gccBuilder.directory(new File(fileDir));
+            Process gccProcess = gccBuilder.start();
+            if (gccProcess.waitFor() != 0) {
+                return "编译失败: " + getProcessOutput(gccProcess);
+            }
+
+            for (String testFilePath : testFilePaths) {
+                //测试参数
+                try (BufferedReader reader = new BufferedReader(new FileReader(testFilePath))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        //设置参数
+                        CoverageData data = new CoverageData();
+                        data.setParam(line.trim());
+
+                        // 运行生成的可执行文件并传递合并后的测试文件内容作为参数
+                        String[] parameters = line.split(" ");
+                        List<String> command = new ArrayList<>();
+                        command.add("cmd");
+                        command.add("/c");
+                        command.add(exeName);
+                        command.addAll(Arrays.asList(parameters));
+                        ProcessBuilder runBuilder = new ProcessBuilder(command);
+                        runBuilder.directory(new File(fileDir));
+                        Process runProcess = runBuilder.start();
+                        data.setResult(runProcess.waitFor() == 0);
+                        cData.add(data);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return "读取测试文件失败：" + e.getMessage();
+                }
+
+            }
+            return calculateCoverage(cData);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return "执行失败：" + e.getMessage();
+        }
+
+    }
+    private Integer compare(ArrayList<Integer> a, ArrayList<Integer> b){
+        if(a.size() != b.size()){
+            return -1;
+        }
+        boolean flag = false;
+        Integer index = -1;
+        for(int i = 0; i < a.size(); i++){
+            if(a.get(i) != b.get(i)){
+                if(!flag){
+                    flag = true;
+                    index = i;
+                    continue;
+                }
+                if(flag){
+                    return -1;
+                }
+            }
+        }
+        return index;
+    }
+    private String calculateCoverage(ArrayList<CoverageData> cData){
+        ArrayList<ArrayList<Integer>> trueList = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> falseList = new ArrayList<>();
+
+        for (CoverageData data : cData) {
+            ArrayList<Integer> paramList = parseParam(data.getParam());
+            if (data.getResult()) {
+                if (!containsList(trueList, paramList)) {
+                    trueList.add(paramList);
+                }
+            } else {
+                if (!containsList(falseList, paramList)) {
+                    falseList.add(paramList);
+                }
+            }
+        }
+
+        int testsize;
+        if(trueList.size()!=0){
+            testsize=trueList.get(0).size();
+        }else {
+            testsize=falseList.get(0).size();
+        }
+
+        int[] result = new int[testsize]; // 用于记录结果的数组
+
+
+        for (int i = 0; i < trueList.size(); i++) {
+            ArrayList<Integer> row0 = trueList.get(i);
+            for(int j =0 ;j<falseList.size();j++){
+                ArrayList<Integer> row1 = falseList.get(j);
+                if(compare(row0,row1)!=-1){
+                    result[compare(row0,row1)]=1;
+                }
+                System.out.println(i);
+            }
+
+        }
+
+        double great=0;
+        double all=result.length;
+        // 打印结果数组
+        System.out.println("Comparison result:");
+        for (int i = 0; i < result.length; i++) {
+            if(result[i]==1){
+                great++;
+            }
+            System.out.println("array[" + i + "] = " + result[i]);
+        }
+
+        return String.valueOf(great/all);
+    }
+    // 检查列表中是否包含某个 ArrayList<Integer>
+    private boolean containsList(ArrayList<ArrayList<Integer>> list, ArrayList<Integer> targetList) {
+        for (ArrayList<Integer> innerList : list) {
+            if (innerList.equals(targetList)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // 解析 param 字符串为 ArrayList<Integer>
+    private ArrayList<Integer> parseParam(String param) {
+        ArrayList<Integer> list = new ArrayList<>();
+        String[] tokens = param.split("\\s+");
+        for (String token : tokens) {
+            list.add(Integer.parseInt(token));
+        }
+        return list;
+    }
+    //生成行覆盖率
     @Override
     public String generateC(String cFilePath, ArrayList<String> testFilePaths) {
         File cFile = new File(cFilePath);
