@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public interface ICoverageService {
 
-    String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPath) throws IOException;
+    public String generateJavaCoverageReport(String codePath, ArrayList<String> testPaths) throws Exception;
 
     String generateC(String codePath, ArrayList<String> execFilePaths);
 }

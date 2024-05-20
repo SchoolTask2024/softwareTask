@@ -1,5 +1,12 @@
 package com.ruoyi.system.service.impl;
 
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.service.ICoverageService;
 import org.jacoco.core.analysis.Analyzer;
@@ -8,23 +15,83 @@ import org.jacoco.core.tools.ExecFileLoader;
 import org.jacoco.report.DirectorySourceFileLocator;
 import org.jacoco.report.IReportVisitor;
 import org.jacoco.report.xml.XMLFormatter;
+import org.junit.platform.launcher.core.LauncherFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+
+import org.junit.platform.console.ConsoleLauncher;
+
+import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
+
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.MavenInvocationException;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import org.junit.jupiter.api.Test;
+
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import org.junit.platform.engine.discovery.DiscoverySelectors;
+import org.junit.platform.launcher.Launcher;
+import org.junit.platform.launcher.LauncherDiscoveryRequest;
+//import org.junit.platform.launcher.LauncherFactory;
+import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
+
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.PrintStream;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class CoverageServiceImpl implements ICoverageService {
 
-    //获取MC/DC覆盖率
-    @Override
-    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPath) {
-        //需要补充
-        return null;
-    }
+
+    //generate C report
     @Override
     public String generateC(String codePath, ArrayList<String> execFilePaths) {
         try {
@@ -42,7 +109,7 @@ public class CoverageServiceImpl implements ICoverageService {
                 runCommand(testCompileCommand);
             }
 
-            // Step 3: Run each test executable
+            //Step 3: Run each test executable
             for (String testPath : execFilePaths) {
                 String testBaseName = new File(testPath).getName().replace(".c", "");
                 String execCommand = String.format("./%s", testBaseName);
@@ -64,6 +131,8 @@ public class CoverageServiceImpl implements ICoverageService {
     }
 
     private void runCommand(String command) throws IOException, InterruptedException {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.directory(new File("/Users/niujiazhen/Desktop/作业/大三下/软件工程/课程设计/niujiazhen/RuoYi-Vue-master"));
         Process process = Runtime.getRuntime().exec(command);
         process.waitFor();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -82,91 +151,204 @@ public class CoverageServiceImpl implements ICoverageService {
         }
         return reportContent.toString();
     }
-    public static String generateCoverageReport1(String codePath, ArrayList<String> execFilePaths) {
-        try {
-            // 生成JaCoCo执行文件加载器
-            ExecFileLoader loader = new ExecFileLoader();
 
-            // 循环加载每个执行文件
-            for (String execFilePath : execFilePaths) {
-                try (InputStream inputStream = new FileInputStream(execFilePath)) {
-                    loader.load(inputStream);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return "error: " + e.getMessage();
+
+
+
+
+
+    @Override
+    public String generateCoverageReport(String codePath, ArrayList<String> testPaths) throws Exception {
+        // Step 1: Create test directory if it doesn't exist
+        Path srcTestDir = Paths.get("ruoyi-system/src/main/java/test");
+        if (!Files.exists(srcTestDir)) {
+            Files.createDirectories(srcTestDir);
+        }
+
+        // Step 2: Copy source file and add package declaration
+        Path copiedCodePath = srcTestDir.resolve(new File(codePath).getName());
+        copyAndModifyFile(Paths.get(codePath), copiedCodePath, "test");
+        System.out.println("Copied code file to: " + copiedCodePath.toAbsolutePath());
+
+        // Step 3: Copy and modify test files
+        List<Path> copiedTestPaths = new ArrayList<>();
+        for (String testPath : testPaths) {
+            Path copiedTestPath = srcTestDir.resolve(new File(testPath).getName());
+            copyAndModifyFile(Paths.get(testPath), copiedTestPath, "test");
+            copiedTestPaths.add(copiedTestPath);
+            System.out.println("Copied test file to: " + copiedTestPath.toAbsolutePath());
+        }
+
+        // Step 2: Read and instrument source code
+        String instrumentedCode = instrumentCode(copiedCodePath.toString());
+
+        // Write instrumented code back to the file
+        try (FileWriter out = new FileWriter(copiedCodePath.toString())) {
+            out.write(instrumentedCode);
+        }
+
+        // Step 3: Compile source code
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        compiler.run(null, null, null, copiedCodePath.toString());
+
+        // Step 4: Compile test code
+        for (Path copiedTestPath : copiedTestPaths) {
+            compiler.run(null, null, null, copiedTestPath.toString());
+        }
+
+
+        // Step 5: Run tests and capture output
+        List<String> outputs = new ArrayList<>();
+        for (Path copiedTestPath : copiedTestPaths) {
+            String classFilePath = copiedTestPath.toString().replace(".java", ".class");
+            String testOutput = runTest(classFilePath);
+            outputs.add(testOutput);
+        }
+
+        // Step 6: Analyze coverage and generate report
+        String report = analyzeCoverage(outputs);
+
+//        // Step 7: Delete copied files
+//        Files.delete(copiedCodePath);
+//        for (Path copiedTestPath : copiedTestPaths) {
+//            Files.delete(copiedTestPath);
+//        }
+
+        return report;
+    }
+    private void copyAndModifyFile(Path sourcePath, Path destinationPath, String packageName) throws IOException {
+        // Read content of source file
+        List<String> lines = Files.readAllLines(sourcePath);
+
+        // Add package declaration to the beginning of the content
+        lines.add(0, "package " + packageName + ";");
+
+        // Write modified content to destination file
+        Files.write(destinationPath, lines);
+    }
+
+    private String instrumentCode(String filePath) throws Exception {
+        FileInputStream in = new FileInputStream(filePath);
+        JavaParser parser = new JavaParser();
+        CompilationUnit cu = parser.parse(in).getResult().orElseThrow(() -> new Exception("Parsing error"));
+        in.close();
+
+        cu.accept(new VoidVisitorAdapter<Void>() {
+            @Override
+            public void visit(IfStmt n, Void arg) {
+                super.visit(n, arg);
+                if (n.getCondition() instanceof BinaryExpr) {
+                    BinaryExpr condition = (BinaryExpr) n.getCondition();
+                    condition.replace(new MethodCallExpr("logCondition", condition.clone()));
                 }
             }
+        }, null);
 
-            // 创建覆盖率分析器
-            CoverageBuilder coverageBuilder = new CoverageBuilder();
-            Analyzer analyzer = new Analyzer(loader.getExecutionDataStore(), coverageBuilder);
+        cu.addImport("static " + CoverageServiceImpl.class.getName() + ".logCondition");
 
-            // 分析代码覆盖率
-            analyzer.analyzeAll(new File(codePath));
+        return cu.toString();
+    }
 
-            // 创建XML格式化器
-            XMLFormatter xmlFormatter = new XMLFormatter();
+    public static boolean logCondition(boolean condition) {
+        // Log the condition evaluation
+        System.out.println("Condition evaluated: " + condition);
+        return condition;
+    }
 
-            // 创建XML报告
-            IReportVisitor xmlVisitor = xmlFormatter.createVisitor(new FileOutputStream("target/site/jacoco/report.xml"));
-            xmlVisitor.visitInfo(loader.getSessionInfoStore().getInfos(), loader.getExecutionDataStore().getContents());
-            xmlVisitor.visitBundle(coverageBuilder.getBundle("Code Coverage Report"), new DirectorySourceFileLocator(new File(codePath), StandardCharsets.UTF_8.name(), 4));
-
-            // 关闭报告访问者
-            xmlVisitor.visitEnd();
-
-            return "success";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "error";
+    private String getClassName(String filePath) {
+        String fileName = new File(filePath).getName();
+        int lastIndex = fileName.lastIndexOf('.');
+        if (lastIndex != -1) {
+            return fileName.substring(0, lastIndex);
+        } else {
+            // 如果没有找到扩展名，则直接返回文件名
+            return fileName;
         }
     }
 
-    public static void main(String[] args) {
-        // 创建测试代码和执行数据文件路径
-        String codePath = "/Users/niujiazhen/Desktop/作业/大三下/软件工程/课程设计/niujiazhen/RuoYi-Vue-master/ruoyi-system/src/test/java/pro2.java";
-        List<String> testPaths = Arrays.asList(
-                "pro2Test1",
-                "pro2Test2",
-                "pro2Test3",
-                "pro2Test4"
-        );
 
-        // 创建覆盖率服务实例
-        ICoverageService coverageService = new CoverageServiceImpl();
-
-        // 执行测试代码并生成执行数据文件
-        ArrayList<String> execFilePaths = new ArrayList<>(); // 修改此处为 ArrayList<String>
-        for (String testPath : testPaths) {
-            // 执行测试代码并生成执行数据文件
-            String execFilePath = executeTestAndGenerateExecFile(testPath);
-            execFilePaths.add(execFilePath);
-        }
-
-        // 生成覆盖率报告
-        String result = generateCoverageReport1(codePath, execFilePaths);
-        System.out.println("Coverage Report Generation Result: " + result);
-    }
-
-    private static String executeTestAndGenerateExecFile(String testClassName) {
-        // 执行测试代码并生成执行数据文件的逻辑
+    private String runTest(String classFilePath) {
         try {
-            // 使用 Runtime.exec() 方法执行测试代码
-            Process process = Runtime.getRuntime().exec("mvn test -Dtest=" + testClassName);
-            // 等待测试执行完成
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                // 测试执行成功，返回执行数据文件路径
-                return "/Users/niujiazhen/Desktop/作业/大三下/软件工程/课程设计/niujiazhen/RuoYi-Vue-master/ruoyi-system/src/test/java/target/jacoco.exec";
-            } else {
-                // 测试执行失败，返回空字符串或者抛出异常
-                throw new RuntimeException("Test execution failed with exit code: " + exitCode);
-            }
-        } catch (IOException | InterruptedException e) {
+            // 创建自定义类加载器以加载测试类所在的目录
+            ClassLoader customClassLoader = new URLClassLoader(new URL[]{new File(classFilePath).getParentFile().toURI().toURL()});
+
+            // 获取测试类的类名（去掉后缀名）
+            String className = "test."+getClassName(classFilePath);
+
+            // 加载测试类
+            Class<?> testClass = customClassLoader.loadClass(className);
+
+            // 创建测试运行器
+            LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
+                    .selectors(DiscoverySelectors.selectClass(testClass))
+                    .build();
+            Launcher launcher = LauncherFactory.create();
+
+            // 运行测试类
+            SummaryGeneratingListener listener = new SummaryGeneratingListener();
+            launcher.registerTestExecutionListeners(listener);
+            launcher.execute(request);
+
+            // 获取测试结果
+            TestExecutionSummary summary = listener.getSummary();
+            return summary.getTestsSucceededCount() + " tests succeeded, " +
+                    summary.getTestsFailedCount() + " tests failed.";
+        } catch (Exception e) {
             e.printStackTrace();
-            return ""; // 或者抛出异常
+            return "Error occurred while running tests.";
         }
     }
+
+
+
+
+
+
+    private String analyzeCoverage(List<String> outputs) {
+        // Analyze the captured output for coverage information
+        int totalConditions = 0;
+        int coveredConditions = 0;
+
+        for (String output : outputs) {
+            String[] lines = output.split("\n");
+            for (String line : lines) {
+                if (line.startsWith("Condition evaluated: ")) {
+                    totalConditions++;
+                    if (Boolean.parseBoolean(line.split(": ")[1])) {
+                        coveredConditions++;
+                    }
+                }
+            }
+        }
+
+        double coverage = (double) coveredConditions / totalConditions * 100;
+        return "MC/DC Coverage: " + coverage + "%";
+    }
+
+    private void addPackageDeclaration(Path filePath, String packageName) throws IOException {
+        List<String> lines = Files.readAllLines(filePath);
+        if (lines.isEmpty() || !lines.get(0).startsWith("package ")) {
+            lines.add(0, "package " + packageName + ";");
+            Files.write(filePath, lines);
+        }
+    }
+
+
+
+
+    public static void main(String[] args) throws Exception {
+        String codePath = "D:/manager/code/pro2.java";
+        ArrayList<String> testPaths = new ArrayList<>();
+        testPaths.add("D:/manager/test/pro2Test1.java");
+        testPaths.add("D:/manager/test/pro2Test2.java");
+        testPaths.add("D:/manager/test/pro2Test3.java");
+        testPaths.add("D:/manager/test/pro2Test4.java");
+
+        CoverageServiceImpl coverageService = new CoverageServiceImpl();
+        String report = coverageService.generateCoverageReport(codePath, testPaths);
+        System.out.println(report);
+    }
+
 
 
 
