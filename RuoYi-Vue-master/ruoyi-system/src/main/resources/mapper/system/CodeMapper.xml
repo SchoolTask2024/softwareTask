@@ -25,7 +25,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select DISTINCT name,type
         from code
     </select>
-
+    <select id="countByName" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM code WHERE name = #{name}
+    </select>
     <select id="selectCodeList" parameterType="Code" resultMap="CodeResult">
         <include refid="selectCodeVo"/>
         <where>  

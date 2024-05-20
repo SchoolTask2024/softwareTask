@@ -62,9 +62,8 @@ public class CoverageServiceImpl implements ICoverageService {
                         //设置参数
                         CoverageData data = new CoverageData();
                         data.setParam(line.trim());
-
                         // 运行生成的可执行文件并传递合并后的测试文件内容作为参数
-                        String[] parameters = line.split(" ");
+                        String[] parameters = line.trim().split(" ");
                         List<String> command = new ArrayList<>();
                         command.add("cmd");
                         command.add("/c");
@@ -76,6 +75,7 @@ public class CoverageServiceImpl implements ICoverageService {
                         data.setResult(runProcess.waitFor() == 0);
                         cData.add(data);
                     }
+                    System.out.println(cData);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return "读取测试文件失败：" + e.getMessage();

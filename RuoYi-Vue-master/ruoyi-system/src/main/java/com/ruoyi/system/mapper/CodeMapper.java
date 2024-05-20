@@ -60,6 +60,7 @@ public interface CodeMapper
     public int deleteCodeByIds(Long[] ids);
 
     public Code selectPathById(Long id);
+    public int countByName(String name);
 
 
 }

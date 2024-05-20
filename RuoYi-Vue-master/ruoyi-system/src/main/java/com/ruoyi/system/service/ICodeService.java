@@ -60,4 +60,6 @@ public interface ICodeService
      * @return 结果
      */
     public int deleteCodeById(Long id);
+
+    int countByName(String name);
 }

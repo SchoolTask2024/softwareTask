@@ -95,4 +95,6 @@ public class CodeServiceImpl implements ICodeService
     {
         return codeMapper.deleteCodeById(id);
     }
+    @Override
+    public int countByName(String name){return codeMapper.countByName(name);}
 }
