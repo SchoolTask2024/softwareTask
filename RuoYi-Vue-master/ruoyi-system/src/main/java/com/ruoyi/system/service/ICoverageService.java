@@ -13,5 +13,8 @@ public interface ICoverageService {
 
     public String generateJavaCoverageReport(String codePath, ArrayList<String> testPaths) throws Exception;
 
+    //获取MC/DC覆盖率
+    String generateCMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths);
+
     String generateC(String codePath, ArrayList<String> execFilePaths);
 }

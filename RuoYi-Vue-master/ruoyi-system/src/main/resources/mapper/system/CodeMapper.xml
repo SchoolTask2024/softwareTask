@@ -21,11 +21,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         left join sys_user su on code.user_id = su.user_id
         order by code.name
     </sql>
-    <select id="selectCodeName">
-        select DISTINCT name
+    <select id="selectCodeName" resultMap="CodeResult">
+        select DISTINCT name,type
         from code
     </select>
-
+    <select id="countByName" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM code WHERE name = #{name}
+    </select>
     <select id="selectCodeList" parameterType="Code" resultMap="CodeResult">
         <include refid="selectCodeVo"/>
         <where>  

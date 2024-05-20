@@ -27,7 +27,7 @@ public interface ICodeService
      */
     public List<Code> selectCodeList(Code code);
 
-    public List<String> selectCodeName();
+    public List<Code> selectCodeName();
 
     /**
      * 新增代码列表
@@ -60,4 +60,6 @@ public interface ICodeService
      * @return 结果
      */
     public int deleteCodeById(Long id);
+
+    int countByName(String name);
 }

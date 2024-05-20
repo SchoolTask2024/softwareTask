@@ -26,7 +26,7 @@ public interface CodeMapper
      * @return 代码列表集合
      */
     public List<Code> selectCodeList(Code code);
-    public List<String> selectCodeName();
+    public List<Code> selectCodeName();
     /**
      * 新增代码列表
      * 
@@ -60,6 +60,7 @@ public interface CodeMapper
     public int deleteCodeByIds(Long[] ids);
 
     public Code selectPathById(Long id);
+    public int countByName(String name);
 
 
 }
