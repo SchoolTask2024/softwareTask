@@ -158,7 +158,7 @@ public class CoverageServiceImpl implements ICoverageService {
 
 
     @Override
-    public String generateCoverageReport(String codePath, ArrayList<String> testPaths) throws Exception {
+    public String generateJavaCoverageReport(String codePath, ArrayList<String> testPaths) throws Exception {
         // Step 1: Create test directory if it doesn't exist
         Path srcTestDir = Paths.get("ruoyi-system/src/main/java/test");
         if (!Files.exists(srcTestDir)) {
@@ -345,7 +345,7 @@ public class CoverageServiceImpl implements ICoverageService {
         testPaths.add("D:/manager/test/pro2Test4.java");
 
         CoverageServiceImpl coverageService = new CoverageServiceImpl();
-        String report = coverageService.generateCoverageReport(codePath, testPaths);
+        String report = coverageService.generateJavaCoverageReport(codePath, testPaths);
         System.out.println(report);
     }
 
