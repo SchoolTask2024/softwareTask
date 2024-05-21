@@ -143,7 +143,7 @@ public class ResultServiceImpl implements IResultService
             for(Test1 test1:testPaths){
                 tests.add(testLocalPath+"/"+test1.getPath());
             }
-            result.setCoverageRate(coverageService.generateCMCDCCoverage(codeFilePath,tests));
+            result.setPath(coverageService.generateCMCDCCoverage(codeFilePath,tests));
         }
 //        String codePath =code.getPath();
 //        String codeFilePath = codeLocalPath +"/"+codePath;
