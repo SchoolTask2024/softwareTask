@@ -129,7 +129,18 @@ public class ResultServiceImpl implements IResultService
         Code code = codeMapper.selectPathById(result.getCodeId());
         //java
         if(code.getType() ==0){
-
+            String codePath =code.getPath();
+            String codeFilePath = codeLocalPath +"/"+codePath;
+            ArrayList<FIleLocation> tests = new ArrayList<>();
+            ArrayList<Test1> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
+            for(Test1 test1:testPaths){
+                tests.add(new FIleLocation(test1.getName(),testLocalPath+"/"+test1.getPath()));
+            }
+            try {
+                result.setPath(coverageService.generateCoverageReport(new FIleLocation(code.getName(),codeFilePath),tests));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         //python
         else if(code.getType() ==1){
@@ -145,18 +156,7 @@ public class ResultServiceImpl implements IResultService
             }
             result.setPath(coverageService.generateCMCDCCoverage(codeFilePath,tests));
         }
-//        String codePath =code.getPath();
-//        String codeFilePath = codeLocalPath +"/"+codePath;
-//        ArrayList<FIleLocation> tests = new ArrayList<>();
-//        ArrayList<Test1> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
-//        for(Test1 test1:testPaths){
-//            tests.add(new FIleLocation(test1.getName(),testLocalPath+"/"+test1.getPath()));
-//        }
-//        try {
-//            coverageService.generateCoverageReport(new FIleLocation(code.getName(),codeFilePath),tests);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+
 
     }
 
