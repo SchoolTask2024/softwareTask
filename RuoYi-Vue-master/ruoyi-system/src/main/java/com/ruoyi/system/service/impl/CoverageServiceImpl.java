@@ -267,7 +267,7 @@ public class CoverageServiceImpl implements ICoverageService {
                 if(compare(row0,row1)!=-1){
                     result[compare(row0,row1)]=1;
                 }
-                System.out.println(i);
+//                System.out.println(i);
             }
 
         }
@@ -280,7 +280,7 @@ public class CoverageServiceImpl implements ICoverageService {
             if(result[i]==1){
                 great++;
             }
-            System.out.println("array[" + i + "] = " + result[i]);
+//            System.out.println("array[" + i + "] = " + result[i]);
         }
 
         return String.valueOf(great/all);
@@ -508,9 +508,6 @@ public class CoverageServiceImpl implements ICoverageService {
             return ""; // 或者抛出异常
         }
     }
-
-
-
 
     //python report
     public  String generatePythonCoverageReport(ArrayList<String>path, String type,String name){
