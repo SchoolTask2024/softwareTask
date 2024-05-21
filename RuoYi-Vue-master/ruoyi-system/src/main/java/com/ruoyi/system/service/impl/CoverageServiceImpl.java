@@ -216,6 +216,12 @@ public class CoverageServiceImpl implements ICoverageService {
 
         return report;
     }
+
+    @Override
+    public String generateCMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
+        return null;
+    }
+
     private void copyAndModifyFile(Path sourcePath, Path destinationPath, String packageName) throws IOException {
         // Read content of source file
         List<String> lines = Files.readAllLines(sourcePath);
