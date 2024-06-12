@@ -138,7 +138,7 @@ public class ResultServiceImpl implements IResultService
             }
             try {
                 result.setPath(coverageService.generateCoverageReport(new FIleLocation(code.getName(),codeFilePath),tests));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
