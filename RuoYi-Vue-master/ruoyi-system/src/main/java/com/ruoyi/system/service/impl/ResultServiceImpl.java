@@ -138,7 +138,7 @@ public class ResultServiceImpl implements IResultService
             }
             try {
                 result.setPath(coverageService.generateCoverageReport(new FIleLocation(code.getName(),codeFilePath),tests));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
@@ -154,7 +154,7 @@ public class ResultServiceImpl implements IResultService
             for(Test1 test1:testPaths){
                 tests.add(testLocalPath+"/"+test1.getPath());
             }
-            result.setPath(coverageService.generateCMCDCCoverage(codeFilePath,tests));
+            result.setCoverageRate(coverageService.generateCMCDCCoverage(codeFilePath,tests));
         }
 
 

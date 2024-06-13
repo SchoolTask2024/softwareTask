@@ -211,7 +211,7 @@ export default {
     setCode(item) {
         const type = item.type
         if (type === 0) {
-          this.fileType = ['txt']
+          this.fileType = ['java']
         }
         if (type === 1) {
           this.fileType = ['txt']

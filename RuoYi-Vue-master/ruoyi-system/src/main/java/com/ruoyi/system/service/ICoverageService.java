@@ -11,7 +11,8 @@ import java.util.ArrayList;
  */
 public interface ICoverageService {
 
-    String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPath) throws IOException;
+    String generateCoverageReport(FIleLocation codePath1, ArrayList<FIleLocation> testPath1) throws Exception;
+
 
     //获取MC/DC覆盖率
     String generateCMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths);

@@ -34,17 +34,17 @@
           v-hasPermi="['codeRunning:result:add']"
         >新增</el-button>
       </el-col>
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--          type="success"-->
-<!--          plain-->
-<!--          icon="el-icon-edit"-->
-<!--          size="mini"-->
-<!--          :disabled="single"-->
-<!--          @click="handleUpdate"-->
-<!--          v-hasPermi="['codeRunning:result:edit']"-->
-<!--        >修改</el-button>-->
-<!--      </el-col>-->
+      <el-col :span="1.5">
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          :disabled="single"
+          @click="handleUpdate"
+          v-hasPermi="['codeRunning:result:edit']"
+        >修改</el-button>
+      </el-col>
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -91,16 +91,16 @@
       </el-table-column>
       <el-table-column label="执行人" align="center" prop="userName" />
       <el-table-column label="运行时间" align="center" prop="time" />
-<!--      <el-table-column label="覆盖率" align="center" prop="coverageRate" />-->
+      <el-table-column label="覆盖率" align="center" prop="coverageRate" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-edit"-->
-<!--            @click="handleUpdate(scope.row)"-->
-<!--            v-hasPermi="['codeRunning:result:edit']"-->
-<!--          >修改</el-button>-->
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['codeRunning:result:edit']"
+          >修改</el-button>
           <el-button
             size="mini"
             type="text"
@@ -108,9 +108,6 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['codeRunning:result:remove']"
           >删除</el-button>
-          <el-button
-            size="mini" type="text" icon="el-icon-folder" @click="redirectToDeep(scope.row.path)"
-          >查看报告</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -178,7 +175,6 @@ export default {
       ids: [],
       codeOptions:[],
       testOptions:[],
-      baseUrl: process.env.VUE_APP_BASE_API+"result/",
       update: false,
       // 非单个禁用
       single: true,
@@ -243,9 +239,6 @@ export default {
       getByCodeName(name).then(response=>{
         this.testOptions= response.data;
       })
-    },
-    redirectToDeep(path){
-      window.open(this.baseUrl+path, '_blank');
     },
     // 取消按钮
     cancel() {
