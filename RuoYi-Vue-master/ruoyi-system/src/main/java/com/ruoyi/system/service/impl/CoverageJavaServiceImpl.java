@@ -212,11 +212,11 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
     }
 
     @Override
-    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths) throws IOException, InterruptedException {
+    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths){
         // 目标目录
         String targetDir = "ruoyi-system/src/main/java";
 
-        // 复制源代码文件
+        // 复制源代码文件0000000000000000
         String sourceCodeFilename = codePath.getFilename();
         Path sourceCodePath = Paths.get(codePath.getFilepath());
         Path targetSourceCodePath = Paths.get(targetDir, sourceCodeFilename);
@@ -229,7 +229,7 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
     }
 
     @Override
-    public String generateCMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
+    public String generateMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
         return "";
     }
 }
