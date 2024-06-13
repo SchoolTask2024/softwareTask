@@ -4,15 +4,13 @@ import com.ruoyi.system.domain.CoverageData;
 import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.service.ICommonCoverageService;
 import com.ruoyi.system.service.ICoverageCalculateService;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,8 +30,9 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
     private ICommonCoverageService commonCoverageService;
 
     private final Object lock = new Object(); // 创建一个对象用于加锁
-    //JavaCoverageReport
-    public void calculateJavaMCDC(ArrayList<FIleLocation> testPaths, String sourceCodeFilename) throws IOException, InterruptedException{
+
+    // JavaCoverageReport
+    public void calculateJavaMCDC(ArrayList<FIleLocation> testPaths, String sourceCodeFilename) throws IOException, InterruptedException {
         List<Queue<Element>> siblingQueues = new ArrayList<>();
         int htmlsize = testPaths.size();
         System.out.println(htmlsize);
@@ -50,16 +49,10 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
             testCodeFilenames.add(testFilename);
 
             // 在每次循环中执行 Maven 命令（加锁）
-            synchronized (lock) {
-                try {
-                    executeMavenCommand();
-                } catch (InterruptedException e) {
-                    // 处理 InterruptedException，可以根据需要进行日志记录或其他操作
-                    Thread.currentThread().interrupt(); // 重新设置线程的中断状态
-                }
-            }
+            executeMavenCommand();
 
             String filePath = "ruoyi-system/target/site/jacoco/default/" + sourceCodeFilename + ".html";
+            System.out.println(filePath);
             Queue<Element> siblingQueue = parser(filePath);
             siblingQueues.add(siblingQueue);
 
@@ -67,56 +60,47 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
             Files.delete(targetTestCodePath);
         }
 
-
-
-        ArrayList<Boolean> filteredQueue = new ArrayList<Boolean>();
+        ArrayList<Boolean> filteredQueue = new ArrayList<>();
         // 输出每个队列的元素信息
-        ArrayList<ArrayList<CoverageData>> cDataArray = new ArrayList();
+        ArrayList<ArrayList<CoverageData>> cDataArray = new ArrayList<>();
 
         for (int i = 0; i < siblingQueues.size(); i++) {
             Queue<Element> siblingQueue = siblingQueues.get(i);
             System.out.println("\n第 " + (i + 1) + " 个文件的含有 bpc 类的元素的下一个兄弟元素：");
 
-            // 生成新队列
-
-
             ArrayList<CoverageData> javaDataArray = new ArrayList<>();
             while (!siblingQueue.isEmpty()) {
                 Element nextElement = siblingQueue.poll();
-                String className = nextElement.getAttribute("class");
+                String className = nextElement.className();
                 CoverageData data = new CoverageData();
 
                 if (i == 0) {
                     data.setParam("4 3 2");
-                }else {
+                } else {
                     data.setParam("4 2 3");
                 }
                 // 根据类别筛选
                 if (className.contains("nc")) {
-                    // 添加到新队列
                     data.setResult(false);
-                }else {
+                } else {
                     data.setResult(true);
                 }
-                //System.out.println(data);
                 javaDataArray.add(data);
+                System.out.println(data);
             }
             cDataArray.add(javaDataArray);
         }
 
         ArrayList<ArrayList<CoverageData>> transposedArray = transpose(cDataArray);
 
-
-
-
-        for(ArrayList i:transposedArray) {
+        for (ArrayList i : transposedArray) {
             System.out.println(commonCoverageService.calculateCoverage(i));
         }
     }
 
     private void executeMavenCommand() throws IOException, InterruptedException {
         // 构建 Maven 命令
-        ProcessBuilder processBuilder = new ProcessBuilder("mvn", "test", "jacoco:report");
+        ProcessBuilder processBuilder = new ProcessBuilder("mvn","test", "jacoco:report");
         processBuilder.directory(new File("ruoyi-system")); // 项目根目录
         processBuilder.redirectErrorStream(true);
 
@@ -127,8 +111,6 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
             throw new IOException("Maven command failed with exit value " + exitCode);
         }
     }
-
-
 
     // 方法：转置 ArrayList<ArrayList<CoverageData>>
     private ArrayList<ArrayList<CoverageData>> transpose(ArrayList<ArrayList<CoverageData>> original) {
@@ -149,41 +131,39 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
 
         return transposed;
     }
+
     private Queue<Element> parser(String path) {
         Queue<Element> siblingQueue = new LinkedList<>();
 
         try {
             // 读取 HTML 文件
             File inputFile = new File(path);
+            if (!inputFile.exists()) {
+                System.out.println("File not found: " + path);
+                return siblingQueue;
+            }
 
-            // 创建 DocumentBuilderFactory
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
-            // 创建 DocumentBuilder
-            DocumentBuilder builder = factory.newDocumentBuilder();
-
-            // 解析 HTML 文件
-            Document doc = builder.parse(inputFile);
-            doc.getDocumentElement().normalize();
+            // 使用 Jsoup 解析 HTML 文件
+            Document doc = Jsoup.parse(inputFile, "UTF-8");
 
             // 获取所有包含 "bpc"、"bfc"、"bnc" 类的元素
-            NodeList nodeList = doc.getElementsByTagName("span");
+            Elements elements = doc.select("span.bpc, span.bfc, span.bnc");
             List<Element> bpcElements = new ArrayList<>();
 
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Element element = (Element) nodeList.item(i);
-                String className = element.getAttribute("class");
-                if (className.contains("bpc") || className.contains("bfc") || className.contains("bnc")) {
-                    bpcElements.add(element);
-                    // 获取包含 "bpc" 类的行号
-                    String id = element.getAttribute("id");
-                    if (id.startsWith("L")) {
+            for (Element element : elements) {
+                bpcElements.add(element);
+                // 获取包含 "bpc" 类的行号
+                String id = element.id();
+                if (id.startsWith("L")) {
+                    try {
                         int lineNumber = Integer.parseInt(id.substring(1));
                         // 获取下一个兄弟元素并放入队列
                         Element nextElement = getNextSiblingElement(element);
                         if (nextElement != null) {
                             siblingQueue.add(nextElement);
                         }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid line number format in id: " + id);
                     }
                 }
             }
@@ -191,12 +171,13 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
             // 输出含有 "bpc"、"bfc"、"bnc" 类的行号
             System.out.println("文件 " + path + " 含有 bpc、bfc、bnc 类的行号：");
             for (Element bpcElement : bpcElements) {
-                String lineNumber = bpcElement.getAttribute("id").substring(1); // 获取行号
+                String lineNumber = bpcElement.id().substring(1); // 获取行号
                 System.out.println(lineNumber);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("Error occurred while parsing the HTML file: " + e.getMessage());
         }
 
         return siblingQueue;
@@ -204,19 +185,16 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
 
     // 辅助方法：获取元素的下一个兄弟元素（排除空白文本节点）
     private Element getNextSiblingElement(Element element) {
-        Node sibling = element.getNextSibling();
-        while (sibling != null && sibling.getNodeType() != Node.ELEMENT_NODE) {
-            sibling = sibling.getNextSibling();
-        }
-        return (Element) sibling; // 可能返回 null，调用方需处理
+        Element sibling = element.nextElementSibling();
+        return sibling; // 可能返回 null，调用方需处理
     }
 
     @Override
-    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths){
+    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths) {
         // 目标目录
         String targetDir = "ruoyi-system/src/main/java";
 
-        // 复制源代码文件0000000000000000
+        // 复制源代码文件
         String sourceCodeFilename = codePath.getFilename();
         Path sourceCodePath = Paths.get(codePath.getFilepath());
         Path targetSourceCodePath = Paths.get(targetDir, sourceCodeFilename);
@@ -227,10 +205,8 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
         }
 
         try {
-            calculateJavaMCDC(testPaths,sourceCodeFilename);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+            calculateJavaMCDC(testPaths, sourceCodeFilename);
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
