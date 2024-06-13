@@ -16,7 +16,7 @@ public class CoveragePythonServiceImpl implements ICoverageCalculateService {
     }
 
     @Override
-    public String generateCMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
+    public String generateMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
         return "";
     }
 }

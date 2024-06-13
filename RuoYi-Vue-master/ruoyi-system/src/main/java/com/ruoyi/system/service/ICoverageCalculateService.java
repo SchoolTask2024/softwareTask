@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public interface ICoverageCalculateService {
-    String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths) throws IOException, InterruptedException;
+    String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths);
 
-    String generateCMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths);
+    String generateMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths);
 }

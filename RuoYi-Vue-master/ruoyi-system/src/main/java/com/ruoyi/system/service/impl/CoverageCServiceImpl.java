@@ -36,7 +36,7 @@ public class CoverageCServiceImpl implements ICoverageCalculateService {
      * @return 返回行覆盖率获取MC/DC覆盖率
      */
     @Override
-    public String generateCMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
+    public String generateMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
         String newContent = "instrumented code:\n";
         InstrumentData instrumentData = instrumentC(cFilePath);
         newContent += instrumentData.getCode()+"\n";
