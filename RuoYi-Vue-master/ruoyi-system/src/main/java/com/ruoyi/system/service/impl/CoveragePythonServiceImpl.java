@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @Service
 public class CoveragePythonServiceImpl implements ICoverageCalculateService {
     @Override
-    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths) throws IOException, InterruptedException {
+    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths){
         return "";
     }
 

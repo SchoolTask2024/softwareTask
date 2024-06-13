@@ -137,14 +137,20 @@ public class ResultServiceImpl implements IResultService
                 tests.add(new FIleLocation(test1.getName(),testLocalPath+"/"+test1.getPath()));
             }
             try {
-                result.setPath(coverageService.generateCoverageReport(new FIleLocation(code.getName(),codeFilePath),tests));
+                result.setPath(coverageService.getCoverageFileJava(new FIleLocation(code.getName(),codeFilePath),tests));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
         //python
         else if(code.getType() ==1){
-
+            String codeFilePath = codeLocalPath +"/"+code.getPath();
+            ArrayList<String> tests = new ArrayList<>();
+            ArrayList<Test1> testPaths = test1Mapper.selectPathsByIds(result.getTestIds().toArray(new Long[0]));
+            for(Test1 test1:testPaths){
+                tests.add(testLocalPath+"/"+test1.getPath());
+            }
+            result.setCoverageRate(coverageService.getCoverageFilePython(codeFilePath,tests));
         }
         //c
         else if(code.getType() ==2){
@@ -154,7 +160,7 @@ public class ResultServiceImpl implements IResultService
             for(Test1 test1:testPaths){
                 tests.add(testLocalPath+"/"+test1.getPath());
             }
-            result.setCoverageRate(coverageService.generateCMCDCCoverage(codeFilePath,tests));
+            result.setCoverageRate(coverageService.getCoverageFileC(codeFilePath,tests));
         }
 
 
