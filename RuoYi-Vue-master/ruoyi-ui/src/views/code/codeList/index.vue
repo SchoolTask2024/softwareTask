@@ -224,12 +224,12 @@ export default {
       if(this.form.type==='2'){
         this.fileType=['c']
       }
-        if(this.form.type==='1'){
-          this.fileType=['py']
-        }
-        if (this.form.type==='0'){
-          this.fileType=['java','jar']
-        }
+      if(this.form.type==='1'){
+        this.fileType=['py','zip']
+      }
+      if (this.form.type==='0'){
+        this.fileType=['java','zip']
+      }
     },
 
     // 取消按钮

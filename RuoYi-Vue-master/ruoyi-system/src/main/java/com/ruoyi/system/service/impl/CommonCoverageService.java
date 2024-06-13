@@ -13,11 +13,22 @@ import java.util.ArrayList;
 public class CommonCoverageService implements ICommonCoverageService {
     @Value("${result.path}")
     private String resultPath;
-    private final String fileType = ".txt";
+    @Value("${result.type}")
+    private String fileType;
+
+    /**
+     * 获取报告文件文件夹
+     * @return 地址
+     */
     @Override
     public String getResultPath() {
         return resultPath;
     }
+
+    /**
+     * 生成报告文件类型
+     * @return 类型
+     */
     @Override
     public String getFileType() {
         return fileType;
@@ -42,6 +53,12 @@ public class CommonCoverageService implements ICommonCoverageService {
         }
         return index;
     }
+
+    /**
+     * 计算覆盖率
+     * @param cData 数据
+     * @return 结果
+     */
     @Override
     public String calculateCoverage(ArrayList<CoverageData> cData){
         ArrayList<ArrayList<Integer>> trueList = new ArrayList<>();
