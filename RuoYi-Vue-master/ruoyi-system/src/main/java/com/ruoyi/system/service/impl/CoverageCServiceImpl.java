@@ -25,7 +25,7 @@ public class CoverageCServiceImpl implements ICoverageCalculateService {
     private ICommonCoverageService commonCoverageService;
 
     @Override
-    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths) throws IOException, InterruptedException {
+    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths){
         return "";
     }
 

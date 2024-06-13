@@ -12,4 +12,9 @@ import java.util.ArrayList;
 public interface ICoverageService {
 
 
+    String getCoverageFileC(String cFilePath, ArrayList<String> testFilePaths);
+
+    String getCoverageFilePython(String cFilePath, ArrayList<String> testFilePaths);
+
+    String getCoverageFileJava(FIleLocation codePath, ArrayList<FIleLocation> testPaths);
 }
