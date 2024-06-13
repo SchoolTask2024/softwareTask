@@ -60,7 +60,6 @@ public class CoverageCServiceImpl implements ICoverageCalculateService {
                     String fileName = cFile.getName();
                     String fileDir = cFile.getParent();
                     String exeName = fileName.replace(".c", ".exe");
-//                    ProcessBuilder gccBuilder = new ProcessBuilder("gcc", "-fprofile-arcs", "-ftest-coverage", "-o", exeName, fileName);
                     ProcessBuilder gccBuilder = new ProcessBuilder("gcc","-o", exeName, fileName);
                     gccBuilder.directory(new File(fileDir));
                     Process gccProcess = gccBuilder.start();
@@ -210,14 +209,11 @@ public class CoverageCServiceImpl implements ICoverageCalculateService {
             while (matcher.find()) {
                 counter++;
                 String body = matcher.group(2).trim();
-
                 // Insert printf statement into the body of if condition
                 String modifiedBody = body + "\nprintf(\"Condition " + counter + " is true!\");\n";
-
                 // Replace original body with modified body
                 matcher.appendReplacement(modifiedContent, matcher.group(1) + " {" + modifiedBody + "}\n");
             }
-
             // Append the rest of the content after the last match
             matcher.appendTail(modifiedContent);
             // Write modified content back to the file
