@@ -220,9 +220,19 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
         String sourceCodeFilename = codePath.getFilename();
         Path sourceCodePath = Paths.get(codePath.getFilepath());
         Path targetSourceCodePath = Paths.get(targetDir, sourceCodeFilename);
-        Files.copy(sourceCodePath, targetSourceCodePath, REPLACE_EXISTING);
+        try {
+            Files.copy(sourceCodePath, targetSourceCodePath, REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        calculateJavaMCDC(testPaths,sourceCodeFilename);
+        try {
+            calculateJavaMCDC(testPaths,sourceCodeFilename);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // 返回 JaCoCo 报告的路径
         return "ruoyi-system/target/site/jacoco";
