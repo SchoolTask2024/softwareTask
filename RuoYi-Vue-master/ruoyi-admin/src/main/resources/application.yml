@@ -136,3 +136,4 @@ test:
 result:
     path: D:/manager/result
     virtual: /result
+    type: .txt

@@ -13,7 +13,8 @@ import java.util.ArrayList;
 public class CommonCoverageService implements ICommonCoverageService {
     @Value("${result.path}")
     private String resultPath;
-    private final String fileType = ".txt";
+    @Value("${result.type}")
+    private String fileType;
 
     /**
      * 获取报告文件文件夹
