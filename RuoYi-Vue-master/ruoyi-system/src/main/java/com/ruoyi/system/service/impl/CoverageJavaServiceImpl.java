@@ -3,7 +3,7 @@ package com.ruoyi.system.service.impl;
 import com.ruoyi.system.domain.CoverageData;
 import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.service.ICommonCoverageService;
-import com.ruoyi.system.service.ICoverageJavaService;
+import com.ruoyi.system.service.ICoverageCalculateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -27,7 +27,7 @@ import java.util.Queue;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
-public class CoverageJavaServiceImpl implements ICoverageJavaService {
+public class CoverageJavaServiceImpl implements ICoverageCalculateService {
     @Autowired
     private ICommonCoverageService commonCoverageService;
 
@@ -226,5 +226,10 @@ public class CoverageJavaServiceImpl implements ICoverageJavaService {
 
         // 返回 JaCoCo 报告的路径
         return "ruoyi-system/target/site/jacoco";
+    }
+
+    @Override
+    public String generateCMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
+        return "";
     }
 }

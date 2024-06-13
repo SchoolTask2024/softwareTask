@@ -3,7 +3,7 @@ package com.ruoyi.system.service.impl;
 import com.ruoyi.system.domain.CoverageData;
 import com.ruoyi.system.domain.InstrumentData;
 import com.ruoyi.system.service.ICommonCoverageService;
-import com.ruoyi.system.service.ICoverageCService;
+import com.ruoyi.system.service.ICoverageCalculateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 @Service
-public class CoverageCServiceImpl implements ICoverageCService{
+public class CoverageCServiceImpl implements ICoverageCalculateService {
     @Autowired
     private ICommonCoverageService commonCoverageService;
     /**
@@ -116,11 +116,9 @@ public class CoverageCServiceImpl implements ICoverageCService{
         return name;
 
     }
-
     /**
      * 行覆盖率
      */
-    @Override
     public String generateC(String cFilePath, ArrayList<String> testFilePaths) {
         File cFile = new File(cFilePath);
         if (!cFile.exists()) {
