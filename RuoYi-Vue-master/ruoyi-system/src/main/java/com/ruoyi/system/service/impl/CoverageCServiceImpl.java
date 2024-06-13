@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.ruoyi.system.domain.CoverageData;
+import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.domain.InstrumentData;
 import com.ruoyi.system.service.ICommonCoverageService;
 import com.ruoyi.system.service.ICoverageCalculateService;
@@ -22,6 +23,12 @@ import java.util.regex.Pattern;
 public class CoverageCServiceImpl implements ICoverageCalculateService {
     @Autowired
     private ICommonCoverageService commonCoverageService;
+
+    @Override
+    public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths) throws IOException, InterruptedException {
+        return "";
+    }
+
     /**
      * 生成C语言的MCDC覆盖率
      * @param cFilePath C文件路径
