@@ -11,8 +11,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,8 +27,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class CoverageJavaServiceImpl implements ICoverageCalculateService {
     @Autowired
     private ICommonCoverageService commonCoverageService;
-
-    private final Object lock = new Object(); // 创建一个对象用于加锁
 
     // JavaCoverageReport
     public void calculateJavaMCDC(ArrayList<FIleLocation> testPaths, String sourceCodeFilename) throws IOException, InterruptedException {
@@ -48,7 +45,7 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
             Files.copy(testPathFull, targetTestCodePath, StandardCopyOption.REPLACE_EXISTING);
             testCodeFilenames.add(testFilename);
 
-            // 在每次循环中执行 Maven 命令（加锁）
+            // 在每次循环中执行 Maven 命令
             executeMavenCommand();
 
             String filePath = "ruoyi-system/target/site/jacoco/default/" + sourceCodeFilename + ".html";
@@ -58,6 +55,7 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
 
             // 删除复制的文件
             Files.delete(targetTestCodePath);
+
         }
 
         ArrayList<Boolean> filteredQueue = new ArrayList<>();
@@ -98,17 +96,27 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
         }
     }
 
-    private void executeMavenCommand() throws IOException, InterruptedException {
-        // 构建 Maven 命令
-        ProcessBuilder processBuilder = new ProcessBuilder("mvn","test", "jacoco:report");
-        processBuilder.directory(new File("ruoyi-system")); // 项目根目录
-        processBuilder.redirectErrorStream(true);
+    private void executeMavenCommand()  {
+        try {
+            // 使用 Runtime 类执行系统命令
+            Process process = Runtime.getRuntime().exec("mvn test jacoco:report");
 
-        Process process = processBuilder.start();
-        int exitCode = process.waitFor();
+            // 读取命令执行的输出信息
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
 
-        if (exitCode != 0) {
-            throw new IOException("Maven command failed with exit value " + exitCode);
+            // 等待命令执行完成
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("Maven命令执行成功！");
+            } else {
+                System.out.println("Maven命令执行失败！");
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -211,11 +219,11 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
         }
 
         // 返回 JaCoCo 报告的路径
-        return "ruoyi-system/target/site/jacoco";
+        return targetDir;
     }
 
     @Override
     public String generateMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
-        return "";
+        return null;
     }
 }
