@@ -34,17 +34,17 @@
           v-hasPermi="['codeRunning:result:add']"
         >新增</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['codeRunning:result:edit']"
-        >修改</el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="success"-->
+<!--          plain-->
+<!--          icon="el-icon-edit"-->
+<!--          size="mini"-->
+<!--          :disabled="single"-->
+<!--          @click="handleUpdate"-->
+<!--          v-hasPermi="['codeRunning:result:edit']"-->
+<!--        >修改</el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="danger"
@@ -91,16 +91,23 @@
       </el-table-column>
       <el-table-column label="执行人" align="center" prop="userName" />
       <el-table-column label="运行时间" align="center" prop="time" />
-      <el-table-column label="覆盖率" align="center" prop="coverageRate" />
+<!--      <el-table-column label="覆盖率" align="center" prop="coverageRate" />-->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-edit"-->
+<!--            @click="handleUpdate(scope.row)"-->
+<!--            v-hasPermi="['codeRunning:result:edit']"-->
+<!--          >修改</el-button>-->
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['codeRunning:result:edit']"
-          >修改</el-button>
+            icon="el-icon-document"
+            @click="openFile(scope.row.coverageRate)"
+          >查看报告
+          </el-button>
           <el-button
             size="mini"
             type="text"
@@ -108,6 +115,7 @@
             @click="handleDelete(scope.row)"
             v-hasPermi="['codeRunning:result:remove']"
           >删除</el-button>
+
         </template>
       </el-table-column>
     </el-table>
@@ -147,9 +155,9 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item v-if="update" label="覆盖率" prop="coverageRate">
-          <el-input v-model="form.coverageRate" placeholder="请输入覆盖率" />
-        </el-form-item>
+<!--        <el-form-item v-if="update" label="覆盖率" prop="coverageRate">-->
+<!--          <el-input v-model="form.coverageRate" placeholder="请输入覆盖率" />-->
+<!--        </el-form-item>-->
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -219,6 +227,9 @@ export default {
     this.getList();
   },
   methods: {
+    openFile(fileName){
+      window.open(process.env.VUE_APP_BASE_API+'/result/'+fileName, '_blank');
+    },
     /** 查询代码运行列表 */
     getList() {
       this.loading = true;
