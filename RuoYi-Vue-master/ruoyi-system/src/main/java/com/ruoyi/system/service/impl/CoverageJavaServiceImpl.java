@@ -15,11 +15,13 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -28,174 +30,6 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
     @Autowired
     private ICommonCoverageService commonCoverageService;
 
-    // JavaCoverageReport
-    public void calculateJavaMCDC(ArrayList<FIleLocation> testPaths, String sourceCodeFilename) throws IOException, InterruptedException {
-        List<Queue<Element>> siblingQueues = new ArrayList<>();
-        int htmlsize = testPaths.size();
-        System.out.println(htmlsize);
-        String targetDir = "ruoyi-system/src/main/java";
-        List<String> testCodeFilenames = new ArrayList<>();
-
-        for (FIleLocation testPath : testPaths) {
-            String testFilename = testPath.getFilename();
-            Path testPathFull = Paths.get(testPath.getFilepath());
-            Path targetTestCodePath = Paths.get(targetDir, testFilename);
-
-            // 复制测试代码文件
-            Files.copy(testPathFull, targetTestCodePath, StandardCopyOption.REPLACE_EXISTING);
-            testCodeFilenames.add(testFilename);
-
-            // 在每次循环中执行 Maven 命令
-            executeMavenCommand();
-
-            String filePath = "ruoyi-system/target/site/jacoco/default/" + sourceCodeFilename + ".html";
-            System.out.println(filePath);
-            Queue<Element> siblingQueue = parser(filePath);
-            siblingQueues.add(siblingQueue);
-
-            // 删除复制的文件
-            Files.delete(targetTestCodePath);
-
-        }
-
-        ArrayList<Boolean> filteredQueue = new ArrayList<>();
-        // 输出每个队列的元素信息
-        ArrayList<ArrayList<CoverageData>> cDataArray = new ArrayList<>();
-
-        for (int i = 0; i < siblingQueues.size(); i++) {
-            Queue<Element> siblingQueue = siblingQueues.get(i);
-            System.out.println("\n第 " + (i + 1) + " 个文件的含有 bpc 类的元素的下一个兄弟元素：");
-
-            ArrayList<CoverageData> javaDataArray = new ArrayList<>();
-            while (!siblingQueue.isEmpty()) {
-                Element nextElement = siblingQueue.poll();
-                String className = nextElement.className();
-                CoverageData data = new CoverageData();
-
-                if (i == 0) {
-                    data.setParam("4 3 2");
-                } else {
-                    data.setParam("4 2 3");
-                }
-                // 根据类别筛选
-                if (className.contains("nc")) {
-                    data.setResult(false);
-                } else {
-                    data.setResult(true);
-                }
-                javaDataArray.add(data);
-                System.out.println(data);
-            }
-            cDataArray.add(javaDataArray);
-        }
-
-        ArrayList<ArrayList<CoverageData>> transposedArray = transpose(cDataArray);
-
-        for (ArrayList i : transposedArray) {
-            System.out.println(commonCoverageService.calculateCoverage(i));
-        }
-    }
-
-    private void executeMavenCommand()  {
-        try {
-            // 使用 Runtime 类执行系统命令
-            Process process = Runtime.getRuntime().exec("mvn test jacoco:report");
-
-            // 读取命令执行的输出信息
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-
-            // 等待命令执行完成
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                System.out.println("Maven命令执行成功！");
-            } else {
-                System.out.println("Maven命令执行失败！");
-            }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 方法：转置 ArrayList<ArrayList<CoverageData>>
-    private ArrayList<ArrayList<CoverageData>> transpose(ArrayList<ArrayList<CoverageData>> original) {
-        ArrayList<ArrayList<CoverageData>> transposed = new ArrayList<>();
-
-        // 获取原始数组的行数和列数
-        int rows = original.size();
-        int cols = original.get(0).size();
-
-        // 遍历原始数组进行转置
-        for (int col = 0; col < cols; col++) {
-            ArrayList<CoverageData> newRow = new ArrayList<>();
-            for (int row = 0; row < rows; row++) {
-                newRow.add(original.get(row).get(col));
-            }
-            transposed.add(newRow);
-        }
-
-        return transposed;
-    }
-
-    private Queue<Element> parser(String path) {
-        Queue<Element> siblingQueue = new LinkedList<>();
-
-        try {
-            // 读取 HTML 文件
-            File inputFile = new File(path);
-            if (!inputFile.exists()) {
-                System.out.println("File not found: " + path);
-                return siblingQueue;
-            }
-
-            // 使用 Jsoup 解析 HTML 文件
-            Document doc = Jsoup.parse(inputFile, "UTF-8");
-
-            // 获取所有包含 "bpc"、"bfc"、"bnc" 类的元素
-            Elements elements = doc.select("span.bpc, span.bfc, span.bnc");
-            List<Element> bpcElements = new ArrayList<>();
-
-            for (Element element : elements) {
-                bpcElements.add(element);
-                // 获取包含 "bpc" 类的行号
-                String id = element.id();
-                if (id.startsWith("L")) {
-                    try {
-                        int lineNumber = Integer.parseInt(id.substring(1));
-                        // 获取下一个兄弟元素并放入队列
-                        Element nextElement = getNextSiblingElement(element);
-                        if (nextElement != null) {
-                            siblingQueue.add(nextElement);
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid line number format in id: " + id);
-                    }
-                }
-            }
-
-            // 输出含有 "bpc"、"bfc"、"bnc" 类的行号
-            System.out.println("文件 " + path + " 含有 bpc、bfc、bnc 类的行号：");
-            for (Element bpcElement : bpcElements) {
-                String lineNumber = bpcElement.id().substring(1); // 获取行号
-                System.out.println(lineNumber);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error occurred while parsing the HTML file: " + e.getMessage());
-        }
-
-        return siblingQueue;
-    }
-
-    // 辅助方法：获取元素的下一个兄弟元素（排除空白文本节点）
-    private Element getNextSiblingElement(Element element) {
-        Element sibling = element.nextElementSibling();
-        return sibling; // 可能返回 null，调用方需处理
-    }
 
     @Override
     public String generateCoverageReport(FIleLocation codePath, ArrayList<FIleLocation> testPaths) {
@@ -207,23 +41,64 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
         Path sourceCodePath = Paths.get(codePath.getFilepath());
         Path targetSourceCodePath = Paths.get(targetDir, sourceCodeFilename);
         try {
-            Files.copy(sourceCodePath, targetSourceCodePath, REPLACE_EXISTING);
+            Files.copy(sourceCodePath, targetSourceCodePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
+            return "Failed to copy source code file.";
         }
 
-        try {
-            calculateJavaMCDC(testPaths, sourceCodeFilename);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        calculateJavaMCDC(testPaths, sourceCodeFilename);
 
         // 返回 JaCoCo 报告的路径
         return targetDir;
     }
 
+    public void calculateJavaMCDC(ArrayList<FIleLocation> testPaths, String sourceCodeFilename) {
+        String targetDir = "ruoyi-system/src/main/java";
+        ExecutorService executor = Executors.newCachedThreadPool();
+        try {
+            for (FIleLocation testPath : testPaths) {
+                Path testFilePath = Paths.get(testPath.getFilepath());
+                Path targetTestFilePath = Paths.get(targetDir, testPath.getFilename());
+
+                System.out.println("Copying test file " + testFilePath + " to " + targetTestFilePath);
+                Files.copy(testFilePath, targetTestFilePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+                System.out.println("Executing mvn clean test jacoco:report");
+                ProcessBuilder processBuilder = new ProcessBuilder("mvn", "clean", "test", "jacoco:report");
+                processBuilder.directory(new File("ruoyi-system"));
+                Process process = processBuilder.start();
+
+                // 等待进程执行完毕
+                synchronized (process) {
+                    while (process.isAlive()) {
+                        process.wait();
+                    }
+                }
+
+                // 删除测试文件
+                System.out.println("Deleting test file " + targetTestFilePath);
+                Files.delete(targetTestFilePath);
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭线程池
+            executor.shutdown();
+        }
+    }
+
+
+
+
     @Override
     public String generateMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
         return null;
+    }
+
+    // 假设 parser 方法签名如下
+    private CoverageData parser(String reportPath) {
+        // 解析报告的具体逻辑
+        return new CoverageData();
     }
 }
