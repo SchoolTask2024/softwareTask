@@ -114,6 +114,7 @@ public class Test1Controller extends BaseController
         return success(test1Service.selectTest1ById(id));
     }
 
+    //根据项目代码名称获取所有对应的测试代码
     @GetMapping("/getTestsByCodeName/{codeName}")
     public AjaxResult getByCodeName(@PathVariable("codeName") String codeName){
 
