@@ -12,8 +12,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="time"    column="time"    />
         <result property="coverageRate"    column="coverage_rate"    />
         <result property="resultName"    column="result_name"    />
+        <result property="conditions"    column="conditions"    />
+        <result property="coverageData"    column="coverage_data"    />
     </resultMap>
-
+    <resultMap id="AnalysisResult" type="AnalysisCoverage">
+        <id property="id"    column="id"    />
+        <result property="resultName"    column="result_name"    />
+        <result property="time"    column="time"    />
+        <result property="conditions"    column="conditions"    />
+        <result property="coverageData"    column="coverage_data"    />
+    </resultMap>
     <sql id="selectResultVo">
         select r.id, r.code_id, r.path, r.user_id, r.time, r.coverage_rate,
                result_name ,su.user_name as userName, c.name as codeName,c.version as codeVersion
@@ -33,7 +41,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="resultName != null  and resultName != ''"> and result_name like concat('%', #{resultName}, '%')</if>
         </where>
     </select>
-    
+    <select id="selectResultByCodeId" parameterType="Long" resultMap="AnalysisResult">
+        select conditions,coverage_data,result_name,time,id
+        from result
+        where code_id =#{id}
+    </select>
     <select id="selectResultById" parameterType="Long" resultMap="ResultResult">
         <include refid="selectResultVo"/>
         where r.id = #{id}
@@ -48,6 +60,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="time != null">time,</if>
             <if test="coverageRate != null">coverage_rate,</if>
             <if test="resultName != null">result_name,</if>
+            <if test="conditions != null">conditions,</if>
+            <if test="coverageData != null">coverage_data,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="codeId != null">#{codeId},</if>
@@ -56,6 +70,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="time != null">#{time},</if>
             <if test="coverageRate != null">#{coverageRate},</if>
             <if test="resultName != null">#{resultName},</if>
+            <if test="conditions != null">#{conditions},</if>
+            <if test="coverageData != null">#{coverageData},</if>
          </trim>
     </insert>
 

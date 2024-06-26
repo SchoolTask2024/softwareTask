@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.system.domain.AnalysisCoverage;
 import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.service.ICoverageCalculateService;
 import com.ruoyi.system.service.ICoverageService;
@@ -22,12 +23,12 @@ public class CoverageServiceImpl implements ICoverageService {
     private ICoverageCalculateService  coveragePythonService;
 
     @Override
-    public String getCoverageFileC(String cFilePath, ArrayList<String> testFilePaths){
-        return coverageCService.generateMCDCCoverage(cFilePath, testFilePaths);
+    public AnalysisCoverage getCoverageFileC(String cFilePath, ArrayList<String> testFilePaths){
+        return coverageCService.generateMCDCCoverageNew(cFilePath, testFilePaths);
     }
     @Override
-    public String getCoverageFilePython(String cFilePath, ArrayList<String> testFilePaths){
-        return coveragePythonService.generateMCDCCoverage(cFilePath, testFilePaths);
+    public AnalysisCoverage getCoverageFilePython(String cFilePath, ArrayList<String> testFilePaths){
+        return coveragePythonService.generateMCDCCoverageNew(cFilePath, testFilePaths);
     }
     @Override
     public String getCoverageFileJava(FIleLocation codePath, ArrayList<FIleLocation> testPaths){

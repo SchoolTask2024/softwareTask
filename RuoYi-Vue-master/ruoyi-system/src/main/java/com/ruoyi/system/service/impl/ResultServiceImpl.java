@@ -1,13 +1,9 @@
 package com.ruoyi.system.service.impl;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ruoyi.system.domain.Code;
-import com.ruoyi.system.domain.FIleLocation;
-import com.ruoyi.system.domain.Test1;
+import com.ruoyi.system.domain.*;
 import com.ruoyi.system.mapper.CodeMapper;
 import com.ruoyi.system.mapper.ResultTestMapper;
 import com.ruoyi.system.mapper.Test1Mapper;
@@ -16,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.ruoyi.system.mapper.ResultMapper;
-import com.ruoyi.system.domain.Result;
 import com.ruoyi.system.service.IResultService;
 
 /**
@@ -71,7 +66,10 @@ public class ResultServiceImpl implements IResultService
         }
         return resultList;
     }
-
+    @Override
+    public List<AnalysisCoverage> selectResultByCodeId(Long codeId){
+        return resultMapper.selectResultByCodeId(codeId);
+    }
     /**
      * 新增代码运行
      * 
@@ -150,7 +148,10 @@ public class ResultServiceImpl implements IResultService
             for(Test1 test1:testPaths){
                 tests.add(testLocalPath+"/"+test1.getPath());
             }
-            result.setCoverageRate(coverageService.getCoverageFilePython(codeFilePath,tests));
+            AnalysisCoverage analysisCoverage = coverageService.getCoverageFilePython(codeFilePath,tests);
+            result.setCoverageRate(analysisCoverage.getPath());
+            result.setConditions(analysisCoverage.getConditions());
+            result.setCoverageData(analysisCoverage.getCoverageData());
         }
         //c
         else if(code.getType() ==2){
@@ -160,7 +161,10 @@ public class ResultServiceImpl implements IResultService
             for(Test1 test1:testPaths){
                 tests.add(testLocalPath+"/"+test1.getPath());
             }
-            result.setCoverageRate(coverageService.getCoverageFileC(codeFilePath,tests));
+            AnalysisCoverage analysisCoverage = coverageService.getCoverageFileC(codeFilePath,tests);
+            result.setCoverageRate(analysisCoverage.getPath());
+            result.setConditions(analysisCoverage.getConditions());
+            result.setCoverageData(analysisCoverage.getCoverageData());
         }
 
 

@@ -48,11 +48,28 @@ public class Result extends BaseEntity
     /** 测试名称 */
     @Excel(name = "测试名称")
     private String resultName;
-
+    private String conditions;
+    private String coverageData;
     private String userName;
     private String codeName;
     private Long codeVersion;
     private List<Test1> test1List;
+
+    public String getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(String conditions) {
+        this.conditions = conditions;
+    }
+
+    public String getCoverageData() {
+        return coverageData;
+    }
+
+    public void setCoverageData(String coverageData) {
+        this.coverageData = coverageData;
+    }
 
     public List<Test1> getTest1List() {
         return test1List;

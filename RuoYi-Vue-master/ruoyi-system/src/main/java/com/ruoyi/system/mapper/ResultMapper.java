@@ -1,6 +1,9 @@
 package com.ruoyi.system.mapper;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.ruoyi.system.domain.AnalysisCoverage;
 import com.ruoyi.system.domain.Result;
 
 /**
@@ -18,7 +21,7 @@ public interface ResultMapper
      * @return 代码运行
      */
     public Result selectResultById(Long id);
-
+    public List<AnalysisCoverage> selectResultByCodeId(Long id);
     /**
      * 查询代码运行列表
      * 

@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.system.domain.AnalysisCoverage;
 import com.ruoyi.system.domain.CoverageData;
 import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.domain.InstrumentData;
@@ -122,6 +123,106 @@ public class CoverageCServiceImpl implements ICoverageCalculateService {
         return name;
 
     }
+    @Override
+    public AnalysisCoverage generateMCDCCoverageNew(String cFilePath, ArrayList<String> testFilePaths){
+        AnalysisCoverage analysisCoverage = new AnalysisCoverage();
+        String newContent = "instrumented code:\n";
+        InstrumentData instrumentData = instrumentC(cFilePath);
+        newContent += instrumentData.getCode()+"\n";
+        ArrayList<CoverageData>[] cDataArray = new ArrayList[instrumentData.getCounter()];
+        for (int i = 0; i < instrumentData.getCounter(); i++) {
+            cDataArray[i] = new ArrayList<>();
+        }
+        for (String testFilePath : testFilePaths) {
+            //测试参数
+            try (BufferedReader reader = new BufferedReader(new FileReader(testFilePath))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    //设置参数
+                    String[] parameters = line.trim().split(" ");
+                    newContent += "parameters:  "+line+"\n";
+                    //将c语言里面的scanf代码替换为参数并获取文件
+                    File cFile = new File(replaceScanfWithParameter(instrumentData.getFilePath(), parameters));
+                    if (!cFile.exists()) {
+                        analysisCoverage.setPath("文件不存在：" + cFilePath);
+                        return analysisCoverage;
+                    }
+                    String fileName = cFile.getName();
+                    String fileDir = cFile.getParent();
+                    String exeName = fileName.replace(".c", ".exe");
+                    ProcessBuilder gccBuilder = new ProcessBuilder("gcc","-o", exeName, fileName);
+                    gccBuilder.directory(new File(fileDir));
+                    Process gccProcess = gccBuilder.start();
+                    if (gccProcess.waitFor() != 0) {
+                        analysisCoverage.setPath("编译失败: " + commonCoverageService.getProcessOutput(gccProcess));
+                        return analysisCoverage;
+                    }
+                    //编译完成后删除代码
+                    cFile.delete();
+                    //运行C代码
+                    ProcessBuilder runBuilder = new ProcessBuilder("cmd", "/c", exeName);
+                    runBuilder.directory(new File(fileDir));
+                    Process runProcess = runBuilder.start();
+                    BufferedReader readerC = new BufferedReader(new InputStreamReader(runProcess.getInputStream()));
+                    String totalPrint = "";
+                    String lineC;
+                    while ((lineC = readerC.readLine()) != null) {
+                        totalPrint += lineC;
+                    }
+                    newContent +="result: "+totalPrint+"\n";
+                    ArrayList<Integer> counters = getCounters(totalPrint);
+                    for(int i = 0; i < instrumentData.getCounter(); i++){
+                        CoverageData data = new CoverageData();
+                        data.setParam(line.trim());
+                        data.setResult(counters.contains(i+1));
+                        cDataArray[i].add(data);
+                    }
+                    runProcess.waitFor();
+                    //运行结束后删除exe文件
+                    File exeFile = new File(fileDir, exeName);
+                    exeFile.delete();
+                }
+            } catch (InterruptedException | IOException e) {
+                e.printStackTrace();
+                analysisCoverage.setPath("读取测试文件失败：" + e.getMessage());
+                return analysisCoverage;
+            }
+
+        }
+        //删除instrumented.c文件
+        File instrumentedFile = new File(instrumentData.getFilePath());
+        instrumentedFile.delete();
+        //计算覆盖率
+        String coverage ="";
+        String conditions ="[";
+        String coverageData = "[";
+        for (int i = 0; i < instrumentData.getCounter(); i++) {
+            String re  = commonCoverageService.calculateCoverage(cDataArray[i]);
+            coverage += "Condition"+(i+1)+": "+ re +"\n";
+            conditions += "\"Condition"+(i+1) +"\""+",";
+            coverageData += re +",";
+        }
+        conditions = conditions.substring(0,conditions.length()-1)+"]";
+        coverageData=coverageData.substring(0,coverageData.length()-1)+"]";
+        //加上时间戳
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"); // Format the date and time as YYYYMMDD_HHMMSS
+        String dateTimeStr = now.format(dateTimeFormatter);
+        newContent += "Coverage Data: \n"+coverage;
+        String name = "_coverage_"+dateTimeStr+commonCoverageService.getFileType();
+        try {
+            Path filePath = Paths.get(cFilePath);
+            name = filePath.getFileName().toString().replace(".c", "")+name;
+            Files.write(Path.of(commonCoverageService.getResultPath() +"\\"+ name), newContent.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        analysisCoverage.setPath(name);
+        analysisCoverage.setConditions(conditions);
+        analysisCoverage.setCoverageData(coverageData);
+        return analysisCoverage;
+    }
+
     /**
      * 行覆盖率
      */

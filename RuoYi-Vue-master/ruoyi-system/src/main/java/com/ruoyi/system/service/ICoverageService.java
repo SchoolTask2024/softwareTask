@@ -1,5 +1,6 @@
 package com.ruoyi.system.service;
 
+import com.ruoyi.system.domain.AnalysisCoverage;
 import com.ruoyi.system.domain.FIleLocation;
 
 import java.io.File;
@@ -12,9 +13,9 @@ import java.util.ArrayList;
 public interface ICoverageService {
 
 
-    String getCoverageFileC(String cFilePath, ArrayList<String> testFilePaths);
+    AnalysisCoverage getCoverageFileC(String cFilePath, ArrayList<String> testFilePaths);
 
-    String getCoverageFilePython(String cFilePath, ArrayList<String> testFilePaths);
+    AnalysisCoverage getCoverageFilePython(String cFilePath, ArrayList<String> testFilePaths);
 
     String getCoverageFileJava(FIleLocation codePath, ArrayList<FIleLocation> testPaths);
 }

@@ -69,6 +69,15 @@ public class ResultController extends BaseController
     }
 
     /**
+     *
+     * @param id
+     */
+    @GetMapping(value = "/analysis/{id}")
+    public AjaxResult getResultTest(@PathVariable("id") Long id) {
+        return success(resultService.selectResultByCodeId(id));
+
+    }
+    /**
      * 新增代码运行
      */
     @PreAuthorize("@ss.hasPermi('codeRunning:result:add')")

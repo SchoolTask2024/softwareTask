@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 
+import com.ruoyi.system.domain.AnalysisCoverage;
 import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.service.ICommonCoverageService;
 import com.ruoyi.system.service.ICoverageCalculateService;
@@ -66,5 +67,10 @@ public class CoveragePythonServiceImpl implements ICoverageCalculateService {
             e.printStackTrace();
         }
         return "";
+    }
+
+    @Override
+    public AnalysisCoverage generateMCDCCoverageNew(String cFilePath, ArrayList<String> testFilePaths) {
+        return null;
     }
 }

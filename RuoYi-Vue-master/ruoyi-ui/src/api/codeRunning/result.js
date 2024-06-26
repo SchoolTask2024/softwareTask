@@ -8,6 +8,12 @@ export function listResult(query) {
     params: query
   })
 }
+export function analysis(id){
+  return request({
+    url: '/codeRunning/result/analysis/'+id,
+    method: 'get'
+  })
+}
 
 // 查询代码运行详细
 export function getResult(id) {

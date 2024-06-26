@@ -1,6 +1,8 @@
 package com.ruoyi.system.service;
 
 import java.util.List;
+
+import com.ruoyi.system.domain.AnalysisCoverage;
 import com.ruoyi.system.domain.Result;
 
 /**
@@ -26,6 +28,8 @@ public interface IResultService
      * @return 代码运行集合
      */
     public List<Result> selectResultList(Result result);
+
+    List<AnalysisCoverage> selectResultByCodeId(Long codeId);
 
     /**
      * 新增代码运行

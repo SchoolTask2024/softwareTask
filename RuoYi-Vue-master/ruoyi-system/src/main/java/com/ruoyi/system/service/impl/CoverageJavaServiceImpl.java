@@ -1,5 +1,6 @@
 package com.ruoyi.system.service.impl;
 
+import com.ruoyi.system.domain.AnalysisCoverage;
 import com.ruoyi.system.domain.CoverageData;
 import com.ruoyi.system.domain.FIleLocation;
 import com.ruoyi.system.service.ICommonCoverageService;
@@ -93,6 +94,11 @@ public class CoverageJavaServiceImpl implements ICoverageCalculateService {
 
     @Override
     public String generateMCDCCoverage(String cFilePath, ArrayList<String> testFilePaths) {
+        return null;
+    }
+
+    @Override
+    public AnalysisCoverage generateMCDCCoverageNew(String cFilePath, ArrayList<String> testFilePaths) {
         return null;
     }
 
