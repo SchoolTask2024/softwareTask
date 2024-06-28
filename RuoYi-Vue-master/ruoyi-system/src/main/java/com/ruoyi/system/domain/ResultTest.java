@@ -26,7 +26,17 @@ public class ResultTest extends BaseEntity
         this.testId = testId;
     }
 
-    public void setId(Long id) 
+    public ResultTest(Long resultId){
+        this.resultId = resultId;
+    }
+
+    public ResultTest(Long id, Long resultId, Long testId) {
+        this.id = id;
+        this.resultId = resultId;
+        this.testId = testId;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }

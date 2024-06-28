@@ -50,6 +50,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectResultVo"/>
         where r.id = #{id}
     </select>
+
+
         
     <insert id="insertResult" parameterType="Result" keyProperty="id">
         insert into result

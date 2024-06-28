@@ -149,7 +149,7 @@ public class CoverageCServiceImpl implements ICoverageCalculateService {
                     }
                     String fileName = cFile.getName();
                     String fileDir = cFile.getParent();
-                    String exeName = fileName.replace(".c", ".exe");
+                    String exeName = fileName.replace(".c", ".out");
                     ProcessBuilder gccBuilder = new ProcessBuilder("gcc","-o", exeName, fileName);
                     gccBuilder.directory(new File(fileDir));
                     Process gccProcess = gccBuilder.start();
@@ -160,7 +160,7 @@ public class CoverageCServiceImpl implements ICoverageCalculateService {
                     //编译完成后删除代码
                     cFile.delete();
                     //运行C代码
-                    ProcessBuilder runBuilder = new ProcessBuilder("cmd", "/c", exeName);
+                    ProcessBuilder runBuilder = new ProcessBuilder("./"+exeName);
                     runBuilder.directory(new File(fileDir));
                     Process runProcess = runBuilder.start();
                     BufferedReader readerC = new BufferedReader(new InputStreamReader(runProcess.getInputStream()));
@@ -213,7 +213,7 @@ public class CoverageCServiceImpl implements ICoverageCalculateService {
         try {
             Path filePath = Paths.get(cFilePath);
             name = filePath.getFileName().toString().replace(".c", "")+name;
-            Files.write(Path.of(commonCoverageService.getResultPath() +"\\"+ name), newContent.getBytes());
+            Files.write(Path.of(commonCoverageService.getResultPath() +"/"+ name), newContent.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

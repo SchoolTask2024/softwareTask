@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     <select id="selectTestListByCodeName" parameterType="String" resultMap="Test1Result">
-        select id,name,code_name
+        select id,name,code_name,path
             from test1
         where code_name = #{codeName}
     </select>
