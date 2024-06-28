@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import java.util.List;
 import com.ruoyi.system.domain.Test1;
+import com.ruoyi.system.domain.Test1Optimize;
 
 /**
  * 测试列表Service接口
@@ -60,4 +61,6 @@ public interface ITest1Service
      * @return 结果
      */
     public int deleteTest1ById(Long id);
+
+    int updateTest1Optimize(Test1Optimize test1Optimize);
 }

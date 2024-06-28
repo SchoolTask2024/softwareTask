@@ -7,6 +7,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.Test1;
+import com.ruoyi.system.domain.Test1Optimize;
 import com.ruoyi.system.service.ITest1Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -154,5 +155,16 @@ public class Test1Controller extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(test1Service.deleteTest1ByIds(ids));
+    }
+
+    /**
+     * 执行测试用例集优化
+     */
+    @PreAuthorize("@ss.hasPermi('test1:test1Optimize:edit')")
+    @Log(title = "测试用例集优化", businessType = BusinessType.UPDATE)
+    @PutMapping("/test1Optimize")
+    public AjaxResult edit(@RequestBody Test1Optimize test1Optimize)
+    {
+        return toAjax(test1Service.updateTest1Optimize(test1Optimize));
     }
 }

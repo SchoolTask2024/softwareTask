@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import { listTest1Optimize, getTest1Optimize, delTest1Optimize, addTest1Optimize, updateTest1Optimize } from "@/api/test1/test1Optimize";
+import {updateTest1Optimize} from "@/api/test1/test1Optimize";
 import { listCodeList } from "@/api/code/codeList";
 import { getByCodeName } from "@/api/test1/test1List"; // 引入获取测试用例的方法
 
@@ -227,17 +227,14 @@ export default {
     /** 优化按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids;
-      getTest1Optimize(id).then(response => {
-        this.form = response.data;
-        // 获取对应代码的测试用例
-        getByCodeName(this.form.name).then(testResponse => {
-          this.testCases = testResponse.data;
-          // 将测试用例名字存入表单参数
-          this.form.testCaseNames = this.testCases.map(testCase => testCase.name);
-          this.open = true;
-          this.title = "测试用例集优化";
-        });
+      this.form = row
+      // 获取对应代码的测试用例
+      getByCodeName(this.form.name).then(testResponse => {
+        this.testCases = testResponse.data;
+        // 将测试用例名字存入表单参数
+        this.form.testCaseNames = this.testCases.map(testCase => testCase.name);
+        this.open = true;
+        this.title = "测试用例集优化";
       });
     },
     /** 优化确定按钮 */
@@ -250,32 +247,10 @@ export default {
               this.open = false;
               this.getList();
             });
-          } else {
-            addTest1Optimize(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
           }
         }
       });
     },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除测试用例集优化编号为"' + ids + '"的数据项？').then(function() {
-        return delTest1Optimize(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('test1/test1Optimize/export', {
-        ...this.queryParams
-      }, `test1Optimize_${new Date().getTime()}.xlsx`);
-    }
   }
 };
 </script>
