@@ -228,6 +228,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       this.form = row
+      this.form.time = null;
       // 获取对应代码的测试用例
       getByCodeName(this.form.name).then(testResponse => {
         this.testCases = testResponse.data;
