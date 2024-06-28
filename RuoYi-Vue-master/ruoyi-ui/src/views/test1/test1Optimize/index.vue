@@ -85,8 +85,8 @@
     <!-- 优化测试用例集对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="代码名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入代码名称" />
+        <el-form-item label="代码名称" prop="name" disabled="">
+          <el-input v-model="form.name" placeholder="请输入代码名称" disabled/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" placeholder="请输入备注" />
