@@ -74,6 +74,13 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-document"
+            @click="openFile(scope.row.path)"
+          >查看文件
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['test1:test1List:edit']"
@@ -199,6 +206,9 @@ export default {
     this.getList();
   },
   methods: {
+    openFile(fileName){
+      window.open(process.env.VUE_APP_BASE_API+'/test/'+fileName, '_blank');
+    },
     /** 查询测试列表列表 */
     getList() {
       this.loading = true;

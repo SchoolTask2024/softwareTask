@@ -92,6 +92,13 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-document"
+            @click="openFile(scope.row.path)"
+          >查看文件
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['code:codeList:edit']"
@@ -211,6 +218,9 @@ export default {
   },
 
   methods: {
+    openFile(fileName){
+      window.open(process.env.VUE_APP_BASE_API+'/code/'+fileName, '_blank');
+    },
     /** 查询代码列表列表 */
     getList() {
       this.loading = true;
