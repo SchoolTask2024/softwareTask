@@ -42,10 +42,10 @@
 
     <el-dialog :title="title" :visible.sync="open" width="1200px" append-to-body>
       <label>运行：</label>
-      <select v-model="dataId"  @change="handleSetBarChartData" >
+      <select v-if="open" v-model="dataId"  @change="handleSetBarChartData" >
         <option v-for="option in chartData" :key="option.id" :value="option.id">{{ option.resultName + " "+ option.time}}</option>
       </select>
-      <my-bar-chart :chart-data="barChartData"/>
+      <my-bar-chart v-if="open" :chart-data="barChartData"/>
     </el-dialog>
   </div>
 </template>
@@ -147,17 +147,27 @@ export default {
     handleAnalysis(code){
       this.chartData=null;
       this.barChartData = null;
-      this.title = code.name + "的数据"
+
       analysis(code.id).then(response=>{
         this.chartData=response.data;
-        this.dataId = this.chartData[0].id;
-        this.barChartData = {
-          id:this.chartData[0].id,
-          conditions :JSON.parse(this.chartData[0].conditions),
-          coverageData:JSON.parse(this.chartData[0].coverageData)
+
+        if(this.chartData.length === 0){
+          this.$message({
+            message: "没有数据",
+            type: "warning"
+          });
+        }else {
+          this.title = code.name + "的数据"
+          this.dataId = this.chartData[0].id;
+          this.barChartData = {
+            id:this.chartData[0].id,
+            conditions :JSON.parse(this.chartData[0].conditions),
+            coverageData:JSON.parse(this.chartData[0].coverageData)
+          }
+          // console.log(this.chartData);
+          this.open = true;
         }
-        // console.log(this.chartData);
-        this.open = true;
+
       });
     },
     handleSetBarChartData(){
