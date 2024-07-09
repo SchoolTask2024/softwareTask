@@ -31,7 +31,6 @@
         </template>
       </el-table-column>
     </el-table>
-
     <pagination
       v-show="total>0"
       :total="total"
@@ -46,6 +45,7 @@
         <option v-for="option in chartData" :key="option.id" :value="option.id">{{ option.resultName + " "+ option.time}}</option>
       </select>
       <my-bar-chart v-if="open" :chart-data="barChartData"/>
+      <my-radar-chart  v-if="open" :chart-data="radarChartData"/>
     </el-dialog>
   </div>
 </template>
@@ -56,10 +56,11 @@ import PanelGroup from "@/views/dashboard/PanelGroup.vue";
 import LineChart from "@/views/dashboard/LineChart.vue";
 import MyBarChart from "@/components/MyBarChart/index.vue";
 import {analysis} from "@/api/codeRunning/result";
+import MyRadarChart from "@/components/MyRadarChart/index.vue";
 
 export default {
   name: "analysis",
-  components: {MyBarChart, LineChart, PanelGroup},
+  components: {MyRadarChart, MyBarChart, LineChart, PanelGroup},
   data() {
     return {
       // 遮罩层
@@ -92,6 +93,7 @@ export default {
       dataId:null,
       chartData:null,
       barChartData:null,
+      radarChartData:null,
       // 表单参数
       form: {},
       // 表单校验
@@ -166,18 +168,56 @@ export default {
           }
           // console.log(this.chartData);
           this.open = true;
+          // this.radarChartData = {
+          //   id:this.chartData[0].id,
+          //   data:this.chartData[0].data,
+          //   indicatorData:this.chartData[0].indicatorData,
+          //   legendData:this.chartData[0].legendData
+          //
+          // }
+         this.radarChartData = {
+           legendData:['文件1', '文件2', '文件3'],
+            indicatorData:[
+              { name: '分支1', max: 1 },
+              { name: '分支2', max: 1 },
+              { name: '分支3', max: 1 },
+              { name: '分支4', max: 1 },
+              { name: '分支5', max: 1 },
+              { name: '分支6', max: 1 }
+            ],
+            data:[
+              {
+                value: [0, 0.3, 0.6, 1, 1, 1],
+                name: '文件1'
+              },
+              {
+                value: [1, 0.1, 0.6],
+                name: '文件2'
+              },
+              {
+                value: [0, 1, 1,0.8,1,1,0.3],
+                name: '文件3'
+              }
+            ],
+          }
+
         }
 
       });
     },
     handleSetBarChartData(){
       let data = this.chartData.find(option => option.id === this.dataId);
-      // console.log(data)
       this.barChartData = {
         id:data.id,
         conditions :JSON.parse(data.conditions),
         coverageData:JSON.parse(data.coverageData)
       }
+      // this.radarChartData = {
+      //   id:data.id,
+      //   data:data.data,
+      //   indicatorData:data.indicatorData,
+      //   legendData:data.legendData
+      // }
 
     }
   }

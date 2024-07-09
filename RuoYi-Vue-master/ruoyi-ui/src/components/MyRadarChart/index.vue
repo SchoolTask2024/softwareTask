@@ -4,12 +4,13 @@
 
 <script>
 import * as echarts from 'echarts'
+import resize from "@/views/dashboard/mixins/resize";
 require('echarts/theme/macarons') // echarts theme
-import resize from './mixins/resize'
 
-const animationDuration = 3000
+const animationDuration = 6000
 
 export default {
+  name: "MyRadarChart",
   mixins: [resize],
   props: {
     className: {
@@ -23,29 +24,43 @@ export default {
     height: {
       type: String,
       default: '300px'
+    },
+    chartData: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
-      chart: null
+      chart: null,
     }
   },
   mounted() {
     this.$nextTick(() => {
-      this.initChart()
+      this.chart = echarts.init(this.$el, 'macarons')
+      this.initChart();
     })
   },
-  beforeDestroy() {
-    if (!this.chart) {
-      return
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val)
+      }
     }
-    this.chart.dispose()
-    this.chart = null
+  },
+  beforeDestroy() {
+    if (this.chart) {
+      this.chart.dispose()
+      this.chart = null
+    }
   },
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
-
+      this.setOptions(this.chartData)
+    },
+    setOptions({data, indicatorData,legendData} = {}) {
       this.chart.setOption({
         tooltip: {
           trigger: 'axis',
@@ -67,19 +82,12 @@ export default {
               shadowOffsetY: 15
             }
           },
-          indicator: [
-            { name: '分支1', max: 1 },
-            { name: '分支2', max: 1 },
-            { name: '分支3', max: 1 },
-            { name: '分支4', max: 1 },
-            { name: '分支5', max: 1 },
-            { name: '分支6', max: 1 }
-          ]
+          indicator: indicatorData,
         },
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['文件1', '文件2', '文件3']
+          data: legendData
         },
         series: [{
           type: 'radar',
@@ -93,20 +101,7 @@ export default {
               opacity: 1
             }
           },
-          data: [
-            {
-              value: [0, 0.3, 0.6, 1, 1, 1],
-              name: '文件1'
-            },
-            {
-              value: [1, 0.1, 0.6],
-              name: '文件2'
-            },
-            {
-              value: [0, 1, 1,0.8,1,1,0.3],
-              name: '文件3'
-            }
-          ],
+          data: data,
           animationDuration: animationDuration
         }]
       })
@@ -114,3 +109,7 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* 添加任何自定义样式 */
+</style>
